@@ -9,11 +9,6 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "disabled": true,
-      "settings": {}
-    },
     "slideshow_Pmz36j": {
       "type": "slideshow",
       "blocks": {
@@ -46,7 +41,7 @@
         "content_alignment_vertical": "center",
         "content_alignment_horizontal": "center",
         "text_alignment": "center",
-        "overlay_color": "rgba(13, 27, 42, 0.4)",
+        "overlay_color": "#0d1b2a66",
         "heading_size_mobile": 28,
         "heading_size_tablet": 36,
         "heading_size_desktop": 48,
@@ -72,10 +67,74 @@
         "counter_position_vertical": 20,
         "counter_position_horizontal": 20
       }
+    },
+    "hero_K7Gccf": {
+      "type": "hero",
+      "name": "Hero",
+      "settings": {
+        "background_color": "#1b263b",
+        "background_image_fit": "cover",
+        "background_image_position": "center center",
+        "show_overlay": true,
+        "overlay_color": "#0d1b2a66",
+        "overlay_opacity": 0.4,
+        "height_mobile": 500,
+        "height_tablet": 600,
+        "height_desktop": 700,
+        "content_layout": "content-layout--text-center",
+        "text_alignment": "center",
+        "content_gap": 32,
+        "text_spacing": 16,
+        "eyebrow_text": "Welcome to Real Estate",
+        "eyebrow_size_mobile": 14,
+        "eyebrow_size_tablet": 16,
+        "eyebrow_size_desktop": 18,
+        "eyebrow_weight": "500",
+        "eyebrow_transform": "uppercase",
+        "eyebrow_letter_spacing": 1,
+        "heading": "Find Your Dream Property",
+        "heading_color": "#ffffff",
+        "heading_size_mobile": 32,
+        "heading_size_tablet": 42,
+        "heading_size_desktop": 56,
+        "heading_size_large": 64,
+        "heading_weight": "700",
+        "heading_line_height": 1.2,
+        "subheading": "Discover the perfect home with our expert real estate services",
+        "subheading_color": "#ffffff",
+        "subheading_size_mobile": 18,
+        "subheading_size_tablet": 20,
+        "subheading_size_desktop": 22,
+        "subheading_size_large": 24,
+        "subheading_weight": "400",
+        "subheading_line_height": 1.5,
+        "subheading_opacity": 0.9,
+        "text_shadow": "0 2px 4px rgba(0, 0, 0, 0.5)",
+        "button_primary_text": "View Properties",
+        "button_primary_url": "/collections/properties",
+        "button_secondary_text": "Learn More",
+        "button_secondary_url": "/pages/about",
+        "button_font_size": 16,
+        "button_font_weight": "600",
+        "button_padding_vertical": 14,
+        "button_padding_horizontal": 28,
+        "button_border_radius": 6,
+        "button_spacing": 16,
+        "button_margin_top": 24,
+        "button_text_transform": "none",
+        "button_letter_spacing": 0,
+        "button_alignment": "flex-start",
+        "button_stack_mobile": "row",
+        "button_full_width_mobile": false,
+        "content_image_border_radius": 8,
+        "content_image_shadow": "0 8px 24px rgba(0, 0, 0, 0.2)",
+        "show_scroll_indicator": false,
+        "scroll_indicator_position": 30
+      }
     }
   },
   "order": [
-    "main",
-    "slideshow_Pmz36j"
+    "slideshow_Pmz36j",
+    "hero_K7Gccf"
   ]
 }
