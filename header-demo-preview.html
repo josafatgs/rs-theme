@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Header Dinámico - Vista Previa</title>
+    <style>
+        :root {
+            --primary-gold: #cd9d08;
+            --primary-white: #ffffff;
+            --dark-blue: #0d1b2a;
+            --section-blue: #1b263b;
+            --detail-blue: #415a77;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --font-primary--family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --page-width: 1200px;
+            --page-margin: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary--family);
+            background-color: #f8f9fa;
+        }
+
+        /* Header Styles (Simplified for demo) */
+        .header {
+            background-color: var(--primary-white);
+            border-bottom: 1px solid rgba(65, 90, 119, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(13, 27, 42, 0.1);
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: var(--page-width);
+            margin: 0 auto;
+            padding: 16px 20px;
+            gap: 2rem;
+        }
+
+        .header-logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark-blue);
+            text-decoration: none;
+        }
+
+        .header-navigation {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .header-menu {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .header-menu-link {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 12px 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .header-menu-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-gold);
+            transition: width 0.3s ease;
+        }
+
+        .header-menu-link:hover {
+            color: var(--primary-gold);
+        }
+
+        .header-menu-link:hover::after {
+            width: 100%;
+        }
+
+        .header-menu-link.active {
+            color: var(--primary-gold);
+            font-weight: 600;
+        }
+
+        .header-menu-link.active::after {
+            width: 100%;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 12px 20px;
+            background-color: var(--primary-gold);
+            color: var(--dark-blue);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .header-whatsapp-btn:hover {
+            background-color: #25d366;
+            color: var(--primary-white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+
+        .header-account-link,
+        .header-cart-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .header-account-link:hover,
+        .header-cart-link:hover {
+            color: var(--primary-gold);
+            background-color: rgba(205, 157, 8, 0.1);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background-color: var(--primary-gold);
+            color: var(--dark-blue);
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .svg-icon {
+            width: 1.25em;
+            height: 1.25em;
+            fill: currentColor;
+        }
+
+        .svg-icon--small {
+            width: 1em;
+            height: 1em;
+        }
+
+        /* Demo Content */
+        .demo-content {
+            padding: 4rem 2rem;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .demo-title {
+            font-size: 2.5rem;
+            color: var(--dark-blue);
+            margin-bottom: 1rem;
+        }
+
+        .demo-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: var(--dark-blue);
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            color: var(--dark-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 16px;
+                gap: 1rem;
+            }
+
+            .header-menu {
+                display: none;
+            }
+
+            .header-whatsapp-btn .whatsapp-text {
+                display: none;
+            }
+
+            .header-whatsapp-btn {
+                padding: 8px 12px;
+            }
+
+            .demo-title {
+                font-size: 2rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Demo -->
+    <header class="header">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="header-logo">
+                <a href="#" class="header-logo-text">🏠 Inmobiliaria Real Estate</a>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="header-navigation">
+                <ul class="header-menu">
+                    <li><a href="#" class="header-menu-link active">Inicio</a></li>
+                    <li><a href="#" class="header-menu-link">Propiedades</a></li>
+                    <li><a href="#" class="header-menu-link">Servicios</a></li>
+                    <li><a href="#" class="header-menu-link">Acerca de</a></li>
+                    <li><a href="#" class="header-menu-link">Contacto</a></li>
+                </ul>
+            </nav>
+
+            <!-- Actions -->
+            <div class="header-actions">
+                <!-- WhatsApp Button -->
+                <a href="#" class="header-whatsapp-btn">
+                    <svg class="svg-icon svg-icon--small" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.488" fill="currentColor"/>
+                    </svg>
+                    <span class="whatsapp-text">Contactar</span>
+                </a>
+
+                <!-- Account -->
+                <a href="#" class="header-account-link">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                    </svg>
+                </a>
+
+                <!-- Cart -->
+                <a href="#" class="header-cart-link">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" fill="currentColor"/>
+                    </svg>
+                    <span class="cart-count">3</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Demo Content -->
+    <div class="demo-content">
+        <h1 class="demo-title">Header Dinámico Implementado</h1>
+        <p class="demo-subtitle">Header completamente personalizable para inmobiliarias con todas las funcionalidades requeridas</p>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Logo Personalizable</h3>
+                <p class="feature-description">Sube tu logo o usa texto personalizado con control total sobre tamaño y espaciado</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Menús Dinámicos</h3>
+                <p class="feature-description">Selecciona cualquier menú creado en Shopify con personalización completa de tipografía</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.488" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">WhatsApp CTA</h3>
+                <p class="feature-description">Botón de contacto directo por WhatsApp completamente personalizable para generar leads</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Responsive & Accesible</h3>
+                <p class="feature-description">Diseño móvil optimizado con navegación hamburguesa y cumplimiento WCAG AA/AAA</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Iconos SVG Modernos</h3>
+                <p class="feature-description">Librería completa de iconos SVG optimizados sin dependencias externas</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Personalización Total</h3>
+                <p class="feature-description">Control completo sobre espaciado, tipografía, colores y comportamiento desde el admin</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

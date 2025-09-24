@@ -1,65 +1,802 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+<header class="header" role="banner" aria-label="Navegación principal">
+  <!-- Skip link for keyboard navigation -->
+  <a href="#main-content" class="skip-link sr-only">Saltar al contenido principal</a>
+  
+  <div class="header-container">
+    <!-- Logo Section -->
+    <div class="header-logo">
+      {% if section.settings.logo != blank %}
+        <a href="{{ routes.root_url }}" 
+           class="header-logo-link"
+           aria-label="Ir a la página principal">
+          <img src="{{ section.settings.logo | image_url: width: section.settings.logo_width }}" 
+               alt="{{ shop.name }}"
+               class="header-logo-image"
+               width="{{ section.settings.logo_width }}"
+               height="auto"
+               loading="eager">
+        </a>
+      {% else %}
+        <a href="{{ routes.root_url }}" 
+           class="header-logo-text"
+           aria-label="Ir a la página principal">
+          {{ section.settings.logo_text | default: shop.name }}
+        </a>
+      {% endif %}
+    </div>
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+    <!-- Mobile Menu Toggle -->
+    <button class="header-mobile-toggle" 
+            aria-expanded="false" 
+            aria-controls="header-navigation"
+            aria-label="Abrir menú de navegación">
+      <span class="mobile-toggle-icon">
+        {% render 'svg', icon: 'menu', class: 'svg-icon--medium' %}
+      </span>
+      <span class="mobile-toggle-close" style="display: none;">
+        {% render 'svg', icon: 'close', class: 'svg-icon--medium' %}
+      </span>
+    </button>
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      {{ 'icon-account.svg' | inline_asset_content | link_to: routes.account_url }}
+    <!-- Navigation Menu -->
+    {% if section.settings.menu != blank %}
+      <nav class="header-navigation" 
+           id="header-navigation"
+           role="navigation" 
+           aria-label="Navegación principal">
+        <ul class="header-menu">
+          {% for link in section.settings.menu.links %}
+            <li class="header-menu-item">
+              <a href="{{ link.url }}" 
+                 class="header-menu-link"
+                 {% if link.current %}aria-current="page"{% endif %}
+                 title="{{ link.title }}">
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
     {% endif %}
 
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
+    <!-- Header Actions -->
+    <div class="header-actions">
+      <!-- WhatsApp CTA Button -->
+      {% if section.settings.whatsapp_number != blank %}
+        <a href="https://wa.me/{{ section.settings.whatsapp_number | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')', '' | replace: '+', '' }}" 
+           class="header-whatsapp-btn"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="Contactar por WhatsApp">
+          {% render 'svg', icon: 'whatsapp', class: 'svg-icon--small' %}
+          <span class="whatsapp-text">{{ section.settings.whatsapp_text | default: 'WhatsApp' }}</span>
+        </a>
       {% endif %}
 
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
+      <!-- Account Icon -->
+      {% if shop.customer_accounts_enabled %}
+        <a href="{{ routes.account_url }}" 
+           class="header-account-link"
+           aria-label="Mi cuenta">
+          {% render 'svg', icon: 'user', class: 'svg-icon--medium' %}
+        </a>
+      {% endif %}
+
+      <!-- Cart Icon -->
+      <a href="{{ routes.cart_url }}" 
+         class="header-cart-link"
+         aria-label="Carrito de compras{% if cart.item_count > 0 %} ({{ cart.item_count }} {% if cart.item_count == 1 %}artículo{% else %}artículos{% endif %}){% endif %}">
+        {% render 'svg', icon: 'cart', class: 'svg-icon--medium' %}
+        {% if cart.item_count > 0 %}
+          <span class="cart-count" aria-hidden="true">{{ cart.item_count }}</span>
+        {% endif %}
+      </a>
+    </div>
   </div>
+
+  <!-- Mobile Navigation Overlay -->
+  <div class="header-mobile-overlay" aria-hidden="true"></div>
 </header>
 
 {% stylesheet %}
-  header {
-    height: 5rem;
+  /* Header Base Styles */
+  .header {
+    background-color: var(--primary-white);
+    border-bottom: 1px solid rgba(65, 90, 119, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    font-family: var(--font-primary--family);
+    box-shadow: 0 2px 8px rgba(13, 27, 42, 0.1);
+  }
+
+  .header-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: {{ section.settings.header_padding_top | default: 16 }}px {{ section.settings.header_padding_horizontal | default: 20 }}px {{ section.settings.header_padding_bottom | default: 16 }}px;
+    gap: 2rem;
   }
-  header a {
-    position: relative;
+
+  /* Logo Styles */
+  .header-logo {
+    flex-shrink: 0;
+    z-index: 101;
+  }
+
+  .header-logo-link,
+  .header-logo-text {
+    display: inline-block;
     text-decoration: none;
-    color: var(--color-foreground);
+    transition: transform 0.3s ease;
   }
-  header a sup {
-    position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
+
+  .header-logo-link:hover,
+  .header-logo-text:hover {
+    transform: scale(1.05);
   }
-  header svg {
-    width: 2rem;
+
+  .header-logo-image {
+    display: block;
+    max-height: {{ section.settings.logo_height | default: 60 }}px;
+    width: auto;
+    object-fit: contain;
   }
-  header .header__menu,
-  header .header__icons {
+
+  .header-logo-text {
+    font-size: {{ section.settings.logo_text_size | default: 28 }}px;
+    font-weight: 700;
+    color: var(--dark-blue);
+    line-height: 1.2;
+  }
+
+  /* Mobile Toggle */
+  .header-mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: var(--dark-blue);
+    z-index: 101;
+    transition: color 0.3s ease;
+  }
+
+  .header-mobile-toggle:hover,
+  .header-mobile-toggle:focus {
+    color: var(--primary-gold);
+    outline: 2px solid var(--primary-gold);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Navigation Styles */
+  .header-navigation {
+    flex: 1;
     display: flex;
+    justify-content: center;
+  }
+
+  .header-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: {{ section.settings.menu_spacing | default: 32 }}px;
+    align-items: center;
+  }
+
+  .header-menu-item {
+    position: relative;
+  }
+
+  .header-menu-link {
+    display: block;
+    padding: {{ section.settings.menu_link_padding | default: 12 }}px 0;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-size: {{ section.settings.menu_font_size | default: 16 }}px;
+    font-weight: {{ section.settings.menu_font_weight | default: 500 }};
+    line-height: 1.4;
+    transition: color 0.3s ease;
+    position: relative;
+  }
+
+  .header-menu-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-gold);
+    transition: width 0.3s ease;
+  }
+
+  .header-menu-link:hover,
+  .header-menu-link:focus {
+    color: var(--primary-gold);
+  }
+
+  .header-menu-link:hover::after,
+  .header-menu-link:focus::after {
+    width: 100%;
+  }
+
+  .header-menu-link[aria-current="page"] {
+    color: var(--primary-gold);
+    font-weight: 600;
+  }
+
+  .header-menu-link[aria-current="page"]::after {
+    width: 100%;
+  }
+
+  /* Header Actions */
+  .header-actions {
+    display: flex;
+    align-items: center;
     gap: 1rem;
+    flex-shrink: 0;
+  }
+
+  /* WhatsApp CTA Button */
+  .header-whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: {{ section.settings.cta_padding_vertical | default: 12 }}px {{ section.settings.cta_padding_horizontal | default: 20 }}px;
+    background-color: var(--primary-gold);
+    color: var(--dark-blue);
+    text-decoration: none;
+    border-radius: {{ section.settings.cta_border_radius | default: 6 }}px;
+    font-size: {{ section.settings.cta_font_size | default: 14 }}px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .header-whatsapp-btn:hover {
+    background-color: #25d366;
+    color: var(--primary-white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+  }
+
+  .header-whatsapp-btn:focus {
+    outline: 2px solid var(--primary-gold);
+    outline-offset: 2px;
+  }
+
+  .header-whatsapp-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3);
+  }
+
+  .whatsapp-text {
+    font-size: inherit;
+  }
+
+  /* Account and Cart Links */
+  .header-account-link,
+  .header-cart-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    color: var(--text-dark);
+    text-decoration: none;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .header-account-link:hover,
+  .header-cart-link:hover {
+    color: var(--primary-gold);
+    background-color: rgba(205, 157, 8, 0.1);
+  }
+
+  .header-account-link:focus,
+  .header-cart-link:focus {
+    outline: 2px solid var(--primary-gold);
+    outline-offset: 2px;
+  }
+
+  /* Cart Count Badge */
+  .cart-count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: var(--primary-gold);
+    color: var(--dark-blue);
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  /* Skip Link */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary-gold);
+    color: var(--dark-blue);
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    z-index: 1000;
+    transition: top 0.3s ease;
+  }
+
+  .skip-link:focus {
+    top: 6px;
+    outline: 2px solid var(--dark-blue);
+    outline-offset: 2px;
+  }
+
+  /* Screen Reader Only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .header-container {
+      padding: {{ section.settings.header_padding_top | default: 16 }}px {{ section.settings.header_padding_horizontal | default: 16 }}px {{ section.settings.header_padding_bottom | default: 16 }}px;
+      gap: 1rem;
+    }
+
+    .header-mobile-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-navigation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: var(--primary-white);
+      z-index: 100;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      padding: 6rem 2rem 2rem;
+      overflow-y: auto;
+    }
+
+    .header-navigation.active {
+      transform: translateX(0);
+    }
+
+    .header-menu {
+      flex-direction: column;
+      gap: 0;
+      align-items: stretch;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
+    .header-menu-item {
+      border-bottom: 1px solid rgba(65, 90, 119, 0.1);
+    }
+
+    .header-menu-link {
+      padding: 1rem 0;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .header-mobile-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: rgba(13, 27, 42, 0.5);
+      z-index: 99;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .header-mobile-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .header-actions {
+      gap: 0.5rem;
+    }
+
+    .header-whatsapp-btn {
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
+    .whatsapp-text {
+      display: none;
+    }
+
+    .header-account-link,
+    .header-cart-link {
+      width: 40px;
+      height: 40px;
+    }
+
+    .header-logo-text {
+      font-size: {{ section.settings.logo_text_size | default: 28 | minus: 4 }}px;
+    }
+
+    .header-logo-image {
+      max-height: {{ section.settings.logo_height | default: 60 | minus: 10 }}px;
+    }
+  }
+
+  /* Tablet Styles */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .header-container {
+      gap: 1.5rem;
+    }
+
+    .header-menu {
+      gap: {{ section.settings.menu_spacing | default: 32 | minus: 8 }}px;
+    }
+
+    .header-menu-link {
+      font-size: {{ section.settings.menu_font_size | default: 16 | minus: 1 }}px;
+    }
+  }
+
+  /* Large Desktop */
+  @media (min-width: 1200px) {
+    .header-container {
+      padding-left: {{ section.settings.header_padding_horizontal | default: 20 | plus: 20 }}px;
+      padding-right: {{ section.settings.header_padding_horizontal | default: 20 | plus: 20 }}px;
+    }
+  }
+
+  /* Touch Device Optimization */
+  @media (hover: none) {
+    .header-logo-link:hover,
+    .header-logo-text:hover {
+      transform: none;
+    }
+
+    .header-whatsapp-btn:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .header-whatsapp-btn:active {
+      background-color: #25d366;
+      color: var(--primary-white);
+    }
+  }
+
+  /* High Contrast Mode */
+  @media (prefers-contrast: high) {
+    .header {
+      border-bottom-width: 2px;
+      border-bottom-color: var(--dark-blue);
+    }
+
+    .header-menu-link:focus,
+    .header-whatsapp-btn:focus {
+      outline-width: 3px;
+      outline-offset: 3px;
+    }
+
+    .cart-count {
+      border: 2px solid var(--dark-blue);
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .header-logo-link,
+    .header-logo-text,
+    .header-menu-link,
+    .header-whatsapp-btn,
+    .header-account-link,
+    .header-cart-link,
+    .header-navigation,
+    .header-mobile-overlay {
+      transition: none;
+    }
+
+    .header-whatsapp-btn:hover,
+    .header-whatsapp-btn:active {
+      transform: none;
+      box-shadow: none;
+    }
   }
 {% endstylesheet %}
 
+<script>
+  // Mobile menu toggle functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileToggle = document.querySelector('.header-mobile-toggle');
+    const navigation = document.querySelector('.header-navigation');
+    const overlay = document.querySelector('.header-mobile-overlay');
+    const toggleIcon = document.querySelector('.mobile-toggle-icon');
+    const closeIcon = document.querySelector('.mobile-toggle-close');
+    
+    if (mobileToggle && navigation && overlay) {
+      mobileToggle.addEventListener('click', function() {
+        const isOpen = navigation.classList.contains('active');
+        
+        if (isOpen) {
+          // Close menu
+          navigation.classList.remove('active');
+          overlay.classList.remove('active');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+          toggleIcon.style.display = 'block';
+          closeIcon.style.display = 'none';
+          document.body.style.overflow = '';
+        } else {
+          // Open menu
+          navigation.classList.add('active');
+          overlay.classList.add('active');
+          mobileToggle.setAttribute('aria-expanded', 'true');
+          toggleIcon.style.display = 'none';
+          closeIcon.style.display = 'block';
+          document.body.style.overflow = 'hidden';
+        }
+      });
+      
+      // Close menu when clicking overlay
+      overlay.addEventListener('click', function() {
+        navigation.classList.remove('active');
+        overlay.classList.remove('active');
+        mobileToggle.setAttribute('aria-expanded', 'false');
+        toggleIcon.style.display = 'block';
+        closeIcon.style.display = 'none';
+        document.body.style.overflow = '';
+      });
+      
+      // Close menu on escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && navigation.classList.contains('active')) {
+          navigation.classList.remove('active');
+          overlay.classList.remove('active');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+          toggleIcon.style.display = 'block';
+          closeIcon.style.display = 'none';
+          document.body.style.overflow = '';
+          mobileToggle.focus();
+        }
+      });
+    }
+  });
+</script>
+
 {% schema %}
 {
-  "name": "t:general.header",
+  "name": "Header",
+  "class": "header-section",
   "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo de la Empresa",
+      "info": "Recomendado: 300x100px o similar en formato PNG/SVG"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Ancho del Logo (px)",
+      "min": 100,
+      "max": 400,
+      "step": 10,
+      "default": 200,
+      "info": "Ancho máximo del logo en píxeles"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "label": "Altura Máxima del Logo (px)",
+      "min": 30,
+      "max": 120,
+      "step": 5,
+      "default": 60,
+      "info": "Altura máxima del logo en píxeles"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Texto del Logo",
+      "info": "Se usa si no hay imagen de logo. Si está vacío, se usa el nombre de la tienda"
+    },
+    {
+      "type": "range",
+      "id": "logo_text_size",
+      "label": "Tamaño del Texto del Logo (px)",
+      "min": 18,
+      "max": 48,
+      "step": 2,
+      "default": 28,
+      "info": "Tamaño de fuente para el texto del logo"
+    },
+    {
+      "type": "header",
+      "content": "Navegación"
+    },
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "Menú Principal",
+      "info": "Selecciona el menú creado en Navegación > Menús"
+    },
+    {
+      "type": "range",
+      "id": "menu_font_size",
+      "label": "Tamaño de Fuente del Menú (px)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 16,
+      "info": "Tamaño de fuente para los enlaces del menú"
+    },
+    {
+      "type": "select",
+      "id": "menu_font_weight",
+      "label": "Peso de Fuente del Menú",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medio" },
+        { "value": "600", "label": "Semi-negrita" },
+        { "value": "700", "label": "Negrita" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "menu_spacing",
+      "label": "Espaciado entre Enlaces (px)",
+      "min": 16,
+      "max": 64,
+      "step": 4,
+      "default": 32,
+      "info": "Espacio entre los enlaces del menú"
+    },
+    {
+      "type": "range",
+      "id": "menu_link_padding",
+      "label": "Padding Vertical de Enlaces (px)",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "info": "Espaciado vertical interno de los enlaces"
+    },
+    {
+      "type": "header",
+      "content": "Botón de WhatsApp"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_number",
+      "label": "Número de WhatsApp",
+      "info": "Ejemplo: +1234567890 o 1234567890"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_text",
+      "label": "Texto del Botón",
+      "default": "WhatsApp",
+      "info": "Texto que aparece en el botón (se oculta en móvil)"
+    },
+    {
+      "type": "range",
+      "id": "cta_font_size",
+      "label": "Tamaño de Fuente del Botón (px)",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "default": 14,
+      "info": "Tamaño de fuente del botón de WhatsApp"
+    },
+    {
+      "type": "range",
+      "id": "cta_padding_vertical",
+      "label": "Padding Vertical del Botón (px)",
+      "min": 8,
+      "max": 20,
+      "step": 2,
+      "default": 12,
+      "info": "Espaciado vertical interno del botón"
+    },
+    {
+      "type": "range",
+      "id": "cta_padding_horizontal",
+      "label": "Padding Horizontal del Botón (px)",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "default": 20,
+      "info": "Espaciado horizontal interno del botón"
+    },
+    {
+      "type": "range",
+      "id": "cta_border_radius",
+      "label": "Radio de Borde del Botón (px)",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "default": 6,
+      "info": "Redondez de las esquinas del botón"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado del Header"
+    },
+    {
+      "type": "range",
+      "id": "header_padding_top",
+      "label": "Padding Superior (px)",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "default": 16,
+      "info": "Espaciado superior interno del header"
+    },
+    {
+      "type": "range",
+      "id": "header_padding_bottom",
+      "label": "Padding Inferior (px)",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "default": 16,
+      "info": "Espaciado inferior interno del header"
+    },
+    {
+      "type": "range",
+      "id": "header_padding_horizontal",
+      "label": "Padding Horizontal (px)",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "default": 20,
+      "info": "Espaciado horizontal interno del header"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header",
+      "settings": {
+        "whatsapp_text": "Contactar",
+        "menu_font_size": 16,
+        "menu_font_weight": "500",
+        "logo_height": 60,
+        "cta_font_size": 14
+      }
     }
   ]
 }
