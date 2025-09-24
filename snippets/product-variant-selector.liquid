@@ -1,0 +1,114 @@
+{% comment %}
+  Product Variant Selector Component
+  Displays variant options as visual swatches when multiple variants are available
+  Requirements: 3.1, 3.5, 3.6
+{% endcomment %}
+
+{% assign product_variants = product.variants %}
+{% assign available_variants = product_variants | where: 'available', true %}
+
+{% comment %} Validate that we have variants and at least one is available {% endcomment %}
+{% assign has_valid_variants = false %}
+{% if product_variants.size > 0 and available_variants.size > 0 %}
+  {% assign has_valid_variants = true %}
+{% endif %}
+
+{% comment %} Only show selector if there are multiple variants and at least one is available {% endcomment %}
+{% if product_variants.size > 1 and has_valid_variants %}
+  <div class="variant-selector" data-product-id="{{ product.id }}">
+    <h4 class="variant-selector-title">Opciones Disponibles</h4>
+    
+    <div class="variant-options" role="radiogroup" aria-labelledby="variant-selector-title">
+      {% for variant in product_variants %}
+        {% assign is_available = variant.available %}
+        {% assign is_selected = false %}
+        
+        {% comment %} Validate variant availability and inventory {% endcomment %}
+        {% assign variant_valid = false %}
+        {% if is_available and variant.inventory_quantity != 0 %}
+          {% assign variant_valid = true %}
+        {% elsif is_available and variant.inventory_policy == 'continue' %}
+          {% comment %} Allow selection if inventory policy allows backorders {% endcomment %}
+          {% assign variant_valid = true %}
+        {% endif %}
+        
+        {% comment %} Set first valid variant as selected by default {% endcomment %}
+        {% if forloop.first and variant_valid %}
+          {% assign is_selected = true %}
+        {% endif %}
+        
+        {% comment %} If current variant matches URL parameter, validate it's available before selecting {% endcomment %}
+        {% if variant.id == product.selected_or_first_available_variant.id and variant_valid %}
+          {% assign is_selected = true %}
+        {% endif %}
+        
+        <div class="variant-option-wrapper">
+          <input 
+            type="radio" 
+            id="variant-{{ variant.id }}" 
+            name="variant" 
+            value="{{ variant.id }}"
+            class="variant-input"
+            {% if is_selected %}checked{% endif %}
+            {% unless variant_valid %}disabled{% endunless %}
+            data-variant-id="{{ variant.id }}"
+            data-variant-price="{{ variant.price }}"
+            data-variant-title="{{ variant.title | escape }}"
+            data-variant-available="{{ variant_valid }}"
+            data-variant-inventory="{{ variant.inventory_quantity | default: 0 }}"
+            {% if variant.featured_image %}
+              data-variant-image="{{ variant.featured_image | image_url: width: 800 }}"
+            {% endif %}
+            {% comment %} Add metafield data attributes for dynamic updates {% endcomment %}
+            {% if variant.metafields.custom.bedrooms %}
+              data-metafield-bedrooms="{{ variant.metafields.custom.bedrooms }}"
+            {% endif %}
+            {% if variant.metafields.custom.bathrooms %}
+              data-metafield-bathrooms="{{ variant.metafields.custom.bathrooms }}"
+            {% endif %}
+            {% if variant.metafields.custom.square_meters %}
+              data-metafield-square-meters="{{ variant.metafields.custom.square_meters }}"
+            {% endif %}
+            {% if variant.metafields.custom.location %}
+              data-metafield-location="{{ variant.metafields.custom.location }}"
+            {% endif %}
+            {% if variant.metafields.custom.property_type %}
+              data-metafield-property-type="{{ variant.metafields.custom.property_type }}"
+            {% endif %}
+            {% if variant.metafields.custom.parking_spaces %}
+              data-metafield-parking-spaces="{{ variant.metafields.custom.parking_spaces }}"
+            {% endif %}
+          >
+          
+          <label 
+            for="variant-{{ variant.id }}" 
+            class="variant-option {% unless variant_valid %}variant-option--disabled{% endunless %}"
+            role="radio"
+            aria-checked="{% if is_selected %}true{% else %}false{% endif %}"
+            {% unless variant_valid %}aria-disabled="true"{% endunless %}
+          >
+            <div class="variant-content">
+              <span class="variant-name">{{ variant.title }}</span>
+              <span class="variant-price">{{ variant.price | money }}</span>
+              {% unless variant_valid %}
+                {% if variant.available == false %}
+                  <span class="variant-status variant-status--unavailable">No Disponible</span>
+                {% elsif variant.inventory_quantity == 0 %}
+                  <span class="variant-status variant-status--out-of-stock">Agotado</span>
+                {% else %}
+                  <span class="variant-status variant-status--unavailable">No Disponible</span>
+                {% endif %}
+              {% endunless %}
+            </div>
+            
+            {% comment %} Visual indicator for selection {% endcomment %}
+            <div class="variant-indicator" aria-hidden="true"></div>
+          </label>
+        </div>
+      {% endfor %}
+    </div>
+    
+    {% comment %} Hidden input for form submission {% endcomment %}
+    <input type="hidden" name="id" id="selected-variant-id" value="{{ product.selected_or_first_available_variant.id }}">
+  </div>
+{% endif %}

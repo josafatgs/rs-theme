@@ -1,0 +1,88 @@
+{% comment %}
+  Product Information Component
+  Displays product title, price, and description with expand functionality
+  Requirements: 4.1, 4.2, 4.3, 4.4
+{% endcomment %}
+
+<div class="product-info">
+  {% comment %} Product Title - Requirement 4.1 {% endcomment %}
+  <h1 class="product-title">{{ product.title }}</h1>
+  
+  {% comment %} Product Price - Requirement 4.1 {% endcomment %}
+  <div class="product-price">
+    {% if product.compare_at_price > product.price %}
+      <span class="price-compare">{{ product.compare_at_price | money }}</span>
+    {% endif %}
+    <span class="price price-current">{{ product.price | money }}</span>
+  </div>
+  
+  {% comment %} Product Description - Requirements 4.2, 4.3, 4.4 {% endcomment %}
+  {% if product.description != blank %}
+    <div class="product-description">
+      {% assign description_length = product.description | size %}
+      {% assign max_length = 300 %}
+      
+      {% if description_length > max_length %}
+        {% comment %} Long description - show truncated with "Ver más" button {% endcomment %}
+        <div class="description-content">
+          <div class="description-short">
+            {{ product.description | truncate: max_length }}
+          </div>
+          <div class="description-full" style="display: none;">
+            {{ product.description }}
+          </div>
+        </div>
+        <button class="description-toggle" type="button" aria-expanded="false">
+          <span class="toggle-text-more">Ver más</span>
+          <span class="toggle-text-less" style="display: none;">Ver menos</span>
+          <svg class="toggle-icon" width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M6 9L2 5H10L6 9Z" fill="currentColor"/>
+          </svg>
+        </button>
+      {% else %}
+        {% comment %} Short description - show complete {% endcomment %}
+        <div class="description-content">
+          {{ product.description }}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+{% comment %} JavaScript for description toggle functionality {% endcomment %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleButtons = document.querySelectorAll('.description-toggle');
+  
+  toggleButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      const descriptionContent = this.previousElementSibling;
+      const shortDesc = descriptionContent.querySelector('.description-short');
+      const fullDesc = descriptionContent.querySelector('.description-full');
+      const moreText = this.querySelector('.toggle-text-more');
+      const lessText = this.querySelector('.toggle-text-less');
+      const icon = this.querySelector('.toggle-icon');
+      
+      const isExpanded = this.getAttribute('aria-expanded') === 'true';
+      
+      if (isExpanded) {
+        // Collapse
+        shortDesc.style.display = 'block';
+        fullDesc.style.display = 'none';
+        moreText.style.display = 'inline';
+        lessText.style.display = 'none';
+        icon.style.transform = 'rotate(0deg)';
+        this.setAttribute('aria-expanded', 'false');
+      } else {
+        // Expand
+        shortDesc.style.display = 'none';
+        fullDesc.style.display = 'block';
+        moreText.style.display = 'none';
+        lessText.style.display = 'inline';
+        icon.style.transform = 'rotate(180deg)';
+        this.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+});
+</script>

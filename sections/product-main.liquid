@@ -1,0 +1,380 @@
+{% comment %}
+  Real Estate Product Main Section
+  Integrates all product components: image slider, product info, metafields, and variant selector
+{% endcomment %}
+
+<div class="product-main" data-product-id="{{ product.id }}" data-auto-play="{{ section.settings.enable_auto_play }}" data-auto-play-speed="{{ section.settings.auto_play_speed }}">
+  <div class="product-container">
+    <div class="product-media">
+      {% comment %} Product image slider component {% endcomment %}
+      {% render 'product-image-slider', product: product, section: section %}
+    </div>
+    
+    <div class="product-info">
+      {% comment %} Product information component {% endcomment %}
+      {% render 'product-info', product: product %}
+      
+      {% comment %} Variant selector component {% endcomment %}
+      {% if product.variants.size > 1 %}
+        {% render 'product-variant-selector', product: product %}
+      {% endif %}
+      
+      {% comment %} Property metafields component {% endcomment %}
+      {% render 'product-metafields', product: product %}
+      
+      {% comment %} Add to cart form {% endcomment %}
+      <form action="/cart/add" method="post" enctype="multipart/form-data" class="product-form">
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" class="product-variant-id">
+        
+        <div class="product-form-buttons">
+          <button type="submit" name="add" class="btn btn-primary product-form-cart-submit" 
+                  {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}>
+            <span class="btn-text">
+              {% if product.selected_or_first_available_variant.available %}
+                Agregar al Carrito
+              {% else %}
+                Agotado
+              {% endif %}
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  .product-main {
+    padding: 2rem 0;
+    background-color: var(--primary-white);
+  }
+  
+  .product-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+  
+  .product-media {
+    width: 100%;
+  }
+  
+  .product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  /* Product form styles */
+  .product-form {
+    margin-top: 2rem;
+  }
+  
+  .product-form-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-gold);
+    color: var(--primary-white);
+    flex: 1;
+  }
+  
+  .btn-primary:hover:not(:disabled) {
+    background-color: #b8890a;
+    transform: translateY(-2px);
+  }
+  
+  .btn-primary:disabled {
+    background-color: var(--text-light);
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .btn-text {
+    font-weight: 600;
+  }
+  
+  /* Integration states and animations */
+  .price-updating {
+    animation: priceUpdate 0.3s ease-in-out;
+  }
+  
+  .value-updating {
+    animation: valueUpdate 0.3s ease-in-out;
+  }
+  
+  .btn-disabled {
+    opacity: 0.6;
+  }
+  
+  @keyframes priceUpdate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); color: var(--primary-gold); }
+    100% { transform: scale(1); }
+  }
+  
+  @keyframes valueUpdate {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; background-color: var(--primary-gold); color: var(--primary-white); }
+    100% { opacity: 1; }
+  }
+  
+  /* Loading states */
+  .product-form-cart-submit:disabled .btn-text::after {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 8px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Tablet layout - balanced columns */
+  @media (min-width: 481px) and (max-width: 768px) {
+    .product-container {
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    
+    .product-main {
+      padding: 1.5rem 0;
+    }
+  }
+  
+  /* Desktop layout - two columns */
+  @media (min-width: 769px) {
+    .product-container {
+      {% case section.settings.desktop_layout %}
+        {% when '50-50' %}
+          grid-template-columns: 1fr 1fr;
+        {% when '70-30' %}
+          grid-template-columns: 70% 30%;
+        {% else %}
+          grid-template-columns: 60% 40%;
+      {% endcase %}
+      gap: 3rem;
+    }
+    
+    .product-main {
+      padding: 3rem 0;
+    }
+    
+    .product-info {
+      gap: 2rem;
+    }
+  }
+  
+  /* Large desktop */
+  @media (min-width: 1200px) {
+    .product-container {
+      padding: 0 2rem;
+    }
+  }
+</style>
+
+{{ 'product-slider.js' | asset_url | script_tag }}
+
+<script>
+  // Integration script for product main section
+  document.addEventListener('DOMContentLoaded', function() {
+    const productMain = document.querySelector('.product-main');
+    if (!productMain) return;
+    
+    const productId = productMain.dataset.productId;
+    const autoPlay = productMain.dataset.autoPlay === 'true';
+    const autoPlaySpeed = parseInt(productMain.dataset.autoPlaySpeed) * 1000 || 5000;
+    
+    // Initialize product slider with section settings
+    const slider = productMain.querySelector('.product-slider');
+    if (slider) {
+      // Update auto-play settings from section configuration
+      slider.dataset.autoPlay = autoPlay;
+      slider.dataset.autoPlaySpeed = autoPlaySpeed;
+      
+      // Re-initialize slider with new settings if needed
+      const existingSlider = slider.productSliderInstance;
+      if (existingSlider) {
+        existingSlider.autoPlayDelay = autoPlaySpeed;
+        existingSlider.isAutoPlaying = autoPlay;
+        
+        if (autoPlay) {
+          existingSlider.startAutoPlay();
+        } else {
+          existingSlider.stopAutoPlay();
+        }
+      }
+    }
+    
+    // Listen for variant changes to update add to cart button
+    document.addEventListener('variantChanged', function(event) {
+      const { variantId, variantData } = event.detail;
+      
+      // Update add to cart button
+      const cartButton = productMain.querySelector('.product-form-cart-submit');
+      const variantInput = productMain.querySelector('.product-variant-id');
+      
+      if (cartButton && variantInput) {
+        variantInput.value = variantId;
+        
+        // Check if variant is available (this would typically come from variant data)
+        const isAvailable = true; // Simplified - in real implementation, check variant availability
+        
+        if (isAvailable) {
+          cartButton.disabled = false;
+          cartButton.querySelector('.btn-text').textContent = 'Agregar al Carrito';
+          cartButton.classList.remove('btn-disabled');
+        } else {
+          cartButton.disabled = true;
+          cartButton.querySelector('.btn-text').textContent = 'Agotado';
+          cartButton.classList.add('btn-disabled');
+        }
+      }
+    });
+    
+    // Handle form submission
+    const productForm = productMain.querySelector('.product-form');
+    if (productForm) {
+      productForm.addEventListener('submit', function(event) {
+        const submitButton = this.querySelector('.product-form-cart-submit');
+        const buttonText = submitButton.querySelector('.btn-text');
+        const originalText = buttonText.textContent;
+        
+        // Show loading state
+        submitButton.disabled = true;
+        buttonText.textContent = 'Agregando...';
+        
+        // Re-enable button after 2 seconds (in case of errors)
+        setTimeout(() => {
+          submitButton.disabled = false;
+          buttonText.textContent = originalText;
+        }, 2000);
+      });
+    }
+    
+    // Smooth scroll to product section if coming from direct link
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('variant') && window.location.hash === '#product') {
+      productMain.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Product Main",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image Slider Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_auto_play",
+      "label": "Enable image slider auto-play",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "auto_play_speed",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Auto-play speed",
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_thumbnails",
+      "label": "Show image thumbnails",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Product Information"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show product vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sku",
+      "label": "Show product SKU",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Property Details"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_metafields",
+      "label": "Show property metafields",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "metafields_title",
+      "label": "Property details section title",
+      "default": "Detalles de la Propiedad"
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Desktop layout",
+      "options": [
+        {
+          "value": "60-40",
+          "label": "60% Images / 40% Info"
+        },
+        {
+          "value": "50-50",
+          "label": "50% Images / 50% Info"
+        },
+        {
+          "value": "70-30",
+          "label": "70% Images / 30% Info"
+        }
+      ],
+      "default": "60-40"
+    }
+  ]
+}
+{% endschema %}

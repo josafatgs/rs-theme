@@ -1,0 +1,228 @@
+{% comment %}
+  Renders product metafields for real estate properties
+  
+  Accepts:
+  - product: product object
+  - variant: variant object (optional)
+  
+  Usage:
+  {% render 'product-metafields', product: product, variant: variant %}
+{% endcomment %}
+
+{% comment %} Data validation helper function {% endcomment %}
+{% liquid
+  assign validate_metafield = false
+  assign validate_number = false
+  assign validate_text = false
+%}
+
+{% comment %} Check if we have any metafields to display {% endcomment %}
+{% assign has_metafields = false %}
+
+{% comment %} Validate and assign metafields with proper type checking {% endcomment %}
+{% assign bedrooms = product.metafields.custom.bedrooms %}
+{% if bedrooms != blank and bedrooms != null and bedrooms != empty %}
+  {% comment %} Validate bedrooms is a positive number {% endcomment %}
+  {% assign bedrooms_num = bedrooms | plus: 0 %}
+  {% if bedrooms_num > 0 %}
+    {% assign bedrooms = bedrooms_num %}
+  {% else %}
+    {% assign bedrooms = null %}
+  {% endif %}
+{% else %}
+  {% assign bedrooms = null %}
+{% endif %}
+
+{% assign bathrooms = product.metafields.custom.bathrooms %}
+{% if bathrooms != blank and bathrooms != null and bathrooms != empty %}
+  {% comment %} Validate bathrooms is a positive number (can be decimal) {% endcomment %}
+  {% assign bathrooms_num = bathrooms | plus: 0.0 %}
+  {% if bathrooms_num > 0 %}
+    {% assign bathrooms = bathrooms_num %}
+  {% else %}
+    {% assign bathrooms = null %}
+  {% endif %}
+{% else %}
+  {% assign bathrooms = null %}
+{% endif %}
+
+{% assign square_meters = product.metafields.custom.square_meters %}
+{% if square_meters != blank and square_meters != null and square_meters != empty %}
+  {% comment %} Validate square_meters is a positive number {% endcomment %}
+  {% assign square_meters_num = square_meters | plus: 0 %}
+  {% if square_meters_num > 0 %}
+    {% assign square_meters = square_meters_num %}
+  {% else %}
+    {% assign square_meters = null %}
+  {% endif %}
+{% else %}
+  {% assign square_meters = null %}
+{% endif %}
+
+{% assign location = product.metafields.custom.location %}
+{% if location != blank and location != null and location != empty %}
+  {% comment %} Validate location is not just whitespace {% endcomment %}
+  {% assign location_trimmed = location | strip %}
+  {% if location_trimmed.size > 0 %}
+    {% assign location = location_trimmed %}
+  {% else %}
+    {% assign location = null %}
+  {% endif %}
+{% else %}
+  {% assign location = null %}
+{% endif %}
+
+{% assign property_type = product.metafields.custom.property_type %}
+{% if property_type != blank and property_type != null and property_type != empty %}
+  {% comment %} Validate property_type is not just whitespace {% endcomment %}
+  {% assign property_type_trimmed = property_type | strip %}
+  {% if property_type_trimmed.size > 0 %}
+    {% assign property_type = property_type_trimmed %}
+  {% else %}
+    {% assign property_type = null %}
+  {% endif %}
+{% else %}
+  {% assign property_type = null %}
+{% endif %}
+
+{% assign parking_spaces = product.metafields.custom.parking_spaces %}
+{% if parking_spaces != blank and parking_spaces != null and parking_spaces != empty %}
+  {% comment %} Validate parking_spaces is a non-negative number {% endcomment %}
+  {% assign parking_spaces_num = parking_spaces | plus: 0 %}
+  {% if parking_spaces_num >= 0 %}
+    {% assign parking_spaces = parking_spaces_num %}
+  {% else %}
+    {% assign parking_spaces = null %}
+  {% endif %}
+{% else %}
+  {% assign parking_spaces = null %}
+{% endif %}
+
+{% comment %} Override with variant metafields if available with validation {% endcomment %}
+{% if variant %}
+  {% comment %} Validate variant bedrooms {% endcomment %}
+  {% if variant.metafields.custom.bedrooms != blank and variant.metafields.custom.bedrooms != null and variant.metafields.custom.bedrooms != empty %}
+    {% assign variant_bedrooms_num = variant.metafields.custom.bedrooms | plus: 0 %}
+    {% if variant_bedrooms_num > 0 %}
+      {% assign bedrooms = variant_bedrooms_num %}
+    {% endif %}
+  {% endif %}
+  
+  {% comment %} Validate variant bathrooms {% endcomment %}
+  {% if variant.metafields.custom.bathrooms != blank and variant.metafields.custom.bathrooms != null and variant.metafields.custom.bathrooms != empty %}
+    {% assign variant_bathrooms_num = variant.metafields.custom.bathrooms | plus: 0.0 %}
+    {% if variant_bathrooms_num > 0 %}
+      {% assign bathrooms = variant_bathrooms_num %}
+    {% endif %}
+  {% endif %}
+  
+  {% comment %} Validate variant square_meters {% endcomment %}
+  {% if variant.metafields.custom.square_meters != blank and variant.metafields.custom.square_meters != null and variant.metafields.custom.square_meters != empty %}
+    {% assign variant_square_meters_num = variant.metafields.custom.square_meters | plus: 0 %}
+    {% if variant_square_meters_num > 0 %}
+      {% assign square_meters = variant_square_meters_num %}
+    {% endif %}
+  {% endif %}
+  
+  {% comment %} Validate variant location {% endcomment %}
+  {% if variant.metafields.custom.location != blank and variant.metafields.custom.location != null and variant.metafields.custom.location != empty %}
+    {% assign variant_location_trimmed = variant.metafields.custom.location | strip %}
+    {% if variant_location_trimmed.size > 0 %}
+      {% assign location = variant_location_trimmed %}
+    {% endif %}
+  {% endif %}
+  
+  {% comment %} Validate variant property_type {% endcomment %}
+  {% if variant.metafields.custom.property_type != blank and variant.metafields.custom.property_type != null and variant.metafields.custom.property_type != empty %}
+    {% assign variant_property_type_trimmed = variant.metafields.custom.property_type | strip %}
+    {% if variant_property_type_trimmed.size > 0 %}
+      {% assign property_type = variant_property_type_trimmed %}
+    {% endif %}
+  {% endif %}
+  
+  {% comment %} Validate variant parking_spaces {% endcomment %}
+  {% if variant.metafields.custom.parking_spaces != blank and variant.metafields.custom.parking_spaces != null and variant.metafields.custom.parking_spaces != empty %}
+    {% assign variant_parking_spaces_num = variant.metafields.custom.parking_spaces | plus: 0 %}
+    {% if variant_parking_spaces_num >= 0 %}
+      {% assign parking_spaces = variant_parking_spaces_num %}
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+{% comment %} Check if any validated metafields exist {% endcomment %}
+{% if bedrooms != null %}
+  {% assign has_metafields = true %}
+{% elsif bathrooms != null %}
+  {% assign has_metafields = true %}
+{% elsif square_meters != null %}
+  {% assign has_metafields = true %}
+{% elsif location != null %}
+  {% assign has_metafields = true %}
+{% elsif property_type != null %}
+  {% assign has_metafields = true %}
+{% elsif parking_spaces != null %}
+  {% assign has_metafields = true %}
+{% endif %}
+
+{% if has_metafields %}
+<div class="property-details">
+  <h3 class="property-details__title">Detalles de la Propiedad</h3>
+  <div class="property-details__grid">
+    
+    {% comment %} Bedrooms - only show if validated {% endcomment %}
+    {% if bedrooms != null %}
+      <div class="property-detail detail-item" data-metafield="bedrooms" data-validation="passed">
+        <span class="property-detail__icon detail-icon">🛏️</span>
+        <span class="property-detail__label detail-label">Recámaras:</span>
+        <span class="property-detail__value detail-value">{{ bedrooms }}</span>
+      </div>
+    {% endif %}
+
+    {% comment %} Bathrooms - only show if validated {% endcomment %}
+    {% if bathrooms != null %}
+      <div class="property-detail detail-item" data-metafield="bathrooms" data-validation="passed">
+        <span class="property-detail__icon detail-icon">🚿</span>
+        <span class="property-detail__label detail-label">Baños:</span>
+        <span class="property-detail__value detail-value">{{ bathrooms }}</span>
+      </div>
+    {% endif %}
+
+    {% comment %} Square Meters - only show if validated {% endcomment %}
+    {% if square_meters != null %}
+      <div class="property-detail detail-item" data-metafield="square-meters" data-validation="passed">
+        <span class="property-detail__icon detail-icon">📐</span>
+        <span class="property-detail__label detail-label">Metros Cuadrados:</span>
+        <span class="property-detail__value detail-value">{{ square_meters }} m²</span>
+      </div>
+    {% endif %}
+
+    {% comment %} Location - only show if validated {% endcomment %}
+    {% if location != null %}
+      <div class="property-detail detail-item" data-metafield="location" data-validation="passed">
+        <span class="property-detail__icon detail-icon">📍</span>
+        <span class="property-detail__label detail-label">Ubicación:</span>
+        <span class="property-detail__value detail-value">{{ location }}</span>
+      </div>
+    {% endif %}
+
+    {% comment %} Property Type - only show if validated {% endcomment %}
+    {% if property_type != null %}
+      <div class="property-detail detail-item" data-metafield="property-type" data-validation="passed">
+        <span class="property-detail__icon detail-icon">🏠</span>
+        <span class="property-detail__label detail-label">Tipo de Propiedad:</span>
+        <span class="property-detail__value detail-value">{{ property_type }}</span>
+      </div>
+    {% endif %}
+
+    {% comment %} Parking Spaces - only show if validated {% endcomment %}
+    {% if parking_spaces != null %}
+      <div class="property-detail detail-item" data-metafield="parking-spaces" data-validation="passed">
+        <span class="property-detail__icon detail-icon">🚗</span>
+        <span class="property-detail__label detail-label">Estacionamiento:</span>
+        <span class="property-detail__value detail-value">{{ parking_spaces }} {% if parking_spaces == 1 %}espacio{% else %}espacios{% endif %}</span>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endif %}

@@ -10,8 +10,11 @@
 {
   "sections": {
     "main": {
-      "type": "product",
-      "settings": {}
+      "type": "product-main",
+      "settings": {
+        "enable_auto_play": true,
+        "auto_play_speed": 5
+      }
     }
   },
   "order": [
