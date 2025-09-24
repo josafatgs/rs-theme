@@ -13,9 +13,69 @@
       "type": "hello-world",
       "disabled": true,
       "settings": {}
+    },
+    "slideshow_Pmz36j": {
+      "type": "slideshow",
+      "blocks": {
+        "image_kKweB6": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/persona-sostiene-confianza-par-llaves-frente-edificio-acceder_359031-48721.webp",
+            "heading": "Bienvenido a Nuestra Inmobiliaria",
+            "subheading": "Encuentra la propiedad de tus sueños",
+            "button_text": "Ver Propiedades",
+            "button_url": "/collections/propiedades"
+          }
+        }
+      },
+      "block_order": [
+        "image_kKweB6"
+      ],
+      "name": "Slideshow",
+      "settings": {
+        "autoplay": true,
+        "autoplay_speed": 5,
+        "transition_speed": 0.5,
+        "slideshow_height_mobile": 300,
+        "slideshow_height_tablet": 400,
+        "slideshow_height_desktop": 500,
+        "slideshow_height_large": 600,
+        "image_fit": "cover",
+        "image_position": "center center",
+        "content_max_width": 600,
+        "content_alignment_vertical": "center",
+        "content_alignment_horizontal": "center",
+        "text_alignment": "center",
+        "overlay_color": "rgba(13, 27, 42, 0.4)",
+        "heading_size_mobile": 28,
+        "heading_size_tablet": 36,
+        "heading_size_desktop": 48,
+        "subheading_size_mobile": 16,
+        "subheading_size_tablet": 18,
+        "subheading_size_desktop": 20,
+        "button_font_size": 16,
+        "button_padding_vertical": 12,
+        "button_padding_horizontal": 24,
+        "button_border_radius": 6,
+        "button_text_transform": "none",
+        "button_letter_spacing": 0,
+        "show_arrows": true,
+        "arrow_size": 48,
+        "arrow_position": 16,
+        "arrow_opacity": 0.8,
+        "show_dots": true,
+        "dot_size": 12,
+        "dots_spacing": 8,
+        "dots_position": 20,
+        "dots_opacity": 0.7,
+        "show_counter": false,
+        "counter_position_vertical": 20,
+        "counter_position_horizontal": 20
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "slideshow_Pmz36j"
   ]
 }
