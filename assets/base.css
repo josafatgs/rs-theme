@@ -1,0 +1,398 @@
+/* Base CSS for Real Estate Theme */
+
+/* Reset and base styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body-family);
+  font-size: 1.6rem;
+  line-height: 1.6;
+  color: var(--color-text-dark);
+  background-color: var(--color-primary-white);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  line-height: 1.2;
+  margin: 0 0 1rem 0;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+@media screen and (max-width: 749px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+  }
+}
+
+p {
+  margin: 0 0 1rem 0;
+}
+
+/* Links */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--color-dark-blue);
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 1.2rem 2.4rem;
+  font-family: var(--font-heading-family);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  border: var(--buttons-border-width) solid transparent;
+  border-radius: var(--buttons-radius);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.btn--primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-white);
+  border-color: var(--color-primary);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-dark-blue);
+  border-color: var(--color-dark-blue);
+  color: var(--color-primary-white);
+  transform: translateY(-2px);
+}
+
+.btn--secondary {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn--secondary:hover {
+  background-color: var(--color-primary);
+  color: var(--color-primary-white);
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 2rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 1.2rem;
+  border: var(--inputs-border-width) solid rgba(0, 0, 0, var(--inputs-border-opacity));
+  border-radius: var(--inputs-radius);
+  font-family: var(--font-body-family);
+  font-size: 1.4rem;
+  background-color: var(--color-primary-white);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(205, 157, 8, 0.2);
+}
+
+input.error,
+select.error,
+textarea.error {
+  border-color: #e74c3c;
+}
+
+.field-error {
+  color: #e74c3c;
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+}
+
+.form-success {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 1.5rem;
+  border-radius: var(--inputs-radius);
+  margin-bottom: 2rem;
+  border: 1px solid #c3e6cb;
+}
+
+/* Layout utilities */
+.container {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+@media screen and (max-width: 749px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+.section {
+  padding: var(--spacing-sections-desktop) 0;
+}
+
+@media screen and (max-width: 749px) {
+  .section {
+    padding: var(--spacing-sections-mobile) 0;
+  }
+}
+
+/* Grid system */
+.grid {
+  display: grid;
+  gap: var(--grid-desktop-horizontal-spacing) var(--grid-desktop-vertical-spacing);
+}
+
+@media screen and (max-width: 749px) {
+  .grid {
+    gap: var(--grid-mobile-horizontal-spacing) var(--grid-mobile-vertical-spacing);
+  }
+}
+
+.grid--1-col {
+  grid-template-columns: 1fr;
+}
+
+.grid--2-col {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid--3-col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid--4-col {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media screen and (max-width: 990px) {
+  .grid--4-col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .grid--2-col,
+  .grid--3-col,
+  .grid--4-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* WhatsApp floating button */
+.whatsapp-float {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+}
+
+.whatsapp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 6rem;
+  height: 6rem;
+  background-color: #25d366;
+  color: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.whatsapp-btn:hover {
+  background-color: #128c7e;
+  transform: scale(1.1);
+  color: white;
+}
+
+.whatsapp-icon {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+@media screen and (max-width: 749px) {
+  .whatsapp-float {
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+  
+  .whatsapp-btn {
+    width: 5rem;
+    height: 5rem;
+  }
+  
+  .whatsapp-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+/* Utility classes */
+.visually-hidden {
+  position: absolute !important;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  word-wrap: normal !important;
+}
+
+.skip-to-content-link {
+  position: absolute;
+  z-index: 9999;
+  top: -4rem;
+  left: 0.8rem;
+  background-color: var(--color-primary);
+  color: var(--color-primary-white);
+  padding: 0.8rem 1.6rem;
+  text-decoration: none;
+  border-radius: 0 0 0.4rem 0.4rem;
+  transition: top 0.3s ease;
+}
+
+.skip-to-content-link:focus {
+  top: 0;
+}
+
+.focus-none {
+  outline: none;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.overflow-hidden-tablet {
+  overflow: hidden;
+}
+
+.overflow-hidden-mobile {
+  overflow: hidden;
+}
+
+@media screen and (min-width: 750px) {
+  .overflow-hidden-tablet {
+    overflow: visible;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .overflow-hidden-mobile {
+    overflow: visible;
+  }
+}
+
+/* Text alignment */
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Spacing utilities */
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 1rem; }
+.mb-2 { margin-bottom: 2rem; }
+.mb-3 { margin-bottom: 3rem; }
+.mb-4 { margin-bottom: 4rem; }
+
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.mt-3 { margin-top: 3rem; }
+.mt-4 { margin-top: 4rem; }
+
+/* Loading states */
+.lazy {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lazy.loaded {
+  opacity: 1;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Print styles */
+@media print {
+  .whatsapp-float,
+  .skip-to-content-link {
+    display: none;
+  }
+}
