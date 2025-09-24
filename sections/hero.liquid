@@ -1,0 +1,1116 @@
+<section class="hero"
+         style="--hero-height-mobile: {{ section.settings.height_mobile }}px; 
+                --hero-height-tablet: {{ section.settings.height_tablet }}px; 
+                --hero-height-desktop: {{ section.settings.height_desktop }}px;
+                --hero-bg-color: {{ section.settings.background_color }};
+                --overlay-opacity: {{ section.settings.overlay_opacity }};"
+         role="banner"
+         aria-label="Hero section">
+
+  <!-- Background Layer -->
+  <div class="hero-background">
+    {% if section.settings.background_image != blank %}
+      <img src="{{ section.settings.background_image | image_url: width: 1920 }}"
+           alt="{{ section.settings.background_image.alt | default: 'Hero background' }}"
+           class="hero-bg-image"
+           loading="eager"
+           sizes="100vw"
+           srcset="{{ section.settings.background_image | image_url: width: 375 }} 375w,
+                   {{ section.settings.background_image | image_url: width: 768 }} 768w,
+                   {{ section.settings.background_image | image_url: width: 1024 }} 1024w,
+                   {{ section.settings.background_image | image_url: width: 1440 }} 1440w,
+                   {{ section.settings.background_image | image_url: width: 1920 }} 1920w">
+    {% endif %}
+    
+    <!-- Overlay -->
+    {% if section.settings.show_overlay %}
+      <div class="hero-overlay"></div>
+    {% endif %}
+  </div>
+
+  <!-- Content Container -->
+  <div class="hero-container">
+    <div class="hero-content {{ section.settings.content_layout }}">
+      
+      <!-- Text Content -->
+      <div class="hero-text-content">
+        {% if section.settings.eyebrow_text != blank %}
+          <p class="hero-eyebrow">{{ section.settings.eyebrow_text }}</p>
+        {% endif %}
+        
+        {% if section.settings.heading != blank %}
+          <h1 class="hero-heading">{{ section.settings.heading }}</h1>
+        {% endif %}
+        
+        {% if section.settings.subheading != blank %}
+          <p class="hero-subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+        
+        <!-- Buttons -->
+        {% if section.settings.button_primary_text != blank or section.settings.button_secondary_text != blank %}
+          <div class="hero-buttons">
+            {% if section.settings.button_primary_text != blank and section.settings.button_primary_url != blank %}
+              <a href="{{ section.settings.button_primary_url }}" 
+                 class="hero-button hero-button--primary"
+                 {% if section.settings.button_primary_url contains 'http' %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                {{ section.settings.button_primary_text }}
+              </a>
+            {% endif %}
+            
+            {% if section.settings.button_secondary_text != blank and section.settings.button_secondary_url != blank %}
+              <a href="{{ section.settings.button_secondary_url }}" 
+                 class="hero-button hero-button--secondary"
+                 {% if section.settings.button_secondary_url contains 'http' %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                {{ section.settings.button_secondary_text }}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Content Image -->
+      {% if section.settings.content_image != blank %}
+        <div class="hero-image-content">
+          <img src="{{ section.settings.content_image | image_url: width: 800 }}"
+               alt="{{ section.settings.content_image.alt | default: section.settings.heading | default: 'Hero content image' }}"
+               class="hero-content-img"
+               loading="eager"
+               sizes="(max-width: 768px) 100vw, 50vw"
+               srcset="{{ section.settings.content_image | image_url: width: 400 }} 400w,
+                       {{ section.settings.content_image | image_url: width: 600 }} 600w,
+                       {{ section.settings.content_image | image_url: width: 800 }} 800w">
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Scroll Indicator (optional) -->
+  {% if section.settings.show_scroll_indicator %}
+    <div class="hero-scroll-indicator" aria-hidden="true">
+      <div class="scroll-arrow">
+        {% render 'svg', icon: 'arrow-down', class: 'svg-icon--medium' %}
+      </div>
+    </div>
+  {% endif %}
+</section>
+
+{% stylesheet %}
+  /* Hero Base Styles */
+  .hero {
+    position: relative;
+    width: 100%;
+    min-height: var(--hero-height-mobile);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: var(--font-primary--family);
+  }
+
+  /* Background Layer */
+  .hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background-color: var(--hero-bg-color);
+  }
+
+  .hero-bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: {{ section.settings.background_image_fit | default: 'cover' }};
+    object-position: {{ section.settings.background_image_position | default: 'center center' }};
+    display: block;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: {{ section.settings.overlay_color | default: 'rgba(13, 27, 42, 0.4)' }};
+    opacity: var(--overlay-opacity);
+    z-index: 2;
+  }
+
+  /* Content Container */
+  .hero-container {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 var(--page-margin);
+  }
+
+  .hero-content {
+    display: grid;
+    gap: {{ section.settings.content_gap | default: 32 }}px;
+    align-items: center;
+    min-height: var(--hero-height-mobile);
+  }
+
+  /* Content Layout Variations */
+  .hero-content.content-layout--text-left {
+    grid-template-columns: 1fr;
+    text-align: {{ section.settings.text_alignment | default: 'left' }};
+  }
+
+  .hero-content.content-layout--text-center {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hero-content.content-layout--text-right {
+    grid-template-columns: 1fr;
+    text-align: {{ section.settings.text_alignment | default: 'right' }};
+  }
+
+  .hero-content.content-layout--split-left {
+    grid-template-columns: 1fr;
+    text-align: {{ section.settings.text_alignment | default: 'left' }};
+  }
+
+  .hero-content.content-layout--split-right {
+    grid-template-columns: 1fr;
+    text-align: {{ section.settings.text_alignment | default: 'left' }};
+  }
+
+  /* Text Content */
+  .hero-text-content {
+    display: flex;
+    flex-direction: column;
+    gap: {{ section.settings.text_spacing | default: 16 }}px;
+  }
+
+  .hero-eyebrow {
+    font-size: {{ section.settings.eyebrow_size_mobile | default: 14 }}px;
+    font-weight: {{ section.settings.eyebrow_weight | default: 500 }};
+    color: var(--primary-gold, #cd9d08);
+    text-transform: {{ section.settings.eyebrow_transform | default: 'uppercase' }};
+    letter-spacing: {{ section.settings.eyebrow_letter_spacing | default: 1 }}px;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .hero-heading {
+    font-size: {{ section.settings.heading_size_mobile | default: 32 }}px;
+    font-weight: {{ section.settings.heading_weight | default: 700 }};
+    color: {{ section.settings.heading_color | default: 'var(--primary-white, #ffffff)' }};
+    line-height: {{ section.settings.heading_line_height | default: 1.2 }};
+    margin: 0;
+    text-shadow: {{ section.settings.text_shadow | default: '0 2px 4px rgba(0, 0, 0, 0.5)' }};
+  }
+
+  .hero-subheading {
+    font-size: {{ section.settings.subheading_size_mobile | default: 18 }}px;
+    font-weight: {{ section.settings.subheading_weight | default: 400 }};
+    color: {{ section.settings.subheading_color | default: 'var(--primary-white, #ffffff)' }};
+    line-height: {{ section.settings.subheading_line_height | default: 1.5 }};
+    margin: 0;
+    opacity: {{ section.settings.subheading_opacity | default: 0.9 }};
+    text-shadow: {{ section.settings.text_shadow | default: '0 1px 2px rgba(0, 0, 0, 0.5)' }};
+  }
+
+  /* Buttons */
+  .hero-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: {{ section.settings.button_spacing | default: 16 }}px;
+    margin-top: {{ section.settings.button_margin_top | default: 24 }}px;
+  }
+
+  .hero-button {
+    display: inline-block;
+    padding: {{ section.settings.button_padding_vertical | default: 14 }}px {{ section.settings.button_padding_horizontal | default: 28 }}px;
+    border-radius: {{ section.settings.button_border_radius | default: 6 }}px;
+    font-size: {{ section.settings.button_font_size | default: 16 }}px;
+    font-weight: {{ section.settings.button_font_weight | default: 600 }};
+    text-decoration: none;
+    text-transform: {{ section.settings.button_text_transform | default: 'none' }};
+    letter-spacing: {{ section.settings.button_letter_spacing | default: 0 }}px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+
+  .hero-button--primary {
+    background-color: var(--primary-gold, #cd9d08);
+    color: var(--dark-blue, #0d1b2a);
+  }
+
+  .hero-button--primary:hover {
+    background-color: var(--primary-white, #ffffff);
+    color: var(--dark-blue, #0d1b2a);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(205, 157, 8, 0.3);
+  }
+
+  .hero-button--secondary {
+    background-color: transparent;
+    color: var(--primary-white, #ffffff);
+    border-color: var(--primary-white, #ffffff);
+  }
+
+  .hero-button--secondary:hover {
+    background-color: var(--primary-white, #ffffff);
+    color: var(--dark-blue, #0d1b2a);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+  }
+
+  .hero-button:focus {
+    outline: 2px solid var(--primary-gold, #cd9d08);
+    outline-offset: 2px;
+  }
+
+  .hero-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Content Image */
+  .hero-image-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hero-content-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: {{ section.settings.content_image_border_radius | default: 8 }}px;
+    box-shadow: {{ section.settings.content_image_shadow | default: '0 8px 24px rgba(0, 0, 0, 0.2)' }};
+  }
+
+  /* Scroll Indicator */
+  .hero-scroll-indicator {
+    position: absolute;
+    bottom: {{ section.settings.scroll_indicator_position | default: 30 }}px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    animation: bounce 2s infinite;
+  }
+
+  .scroll-arrow {
+    color: var(--primary-white, #ffffff);
+    opacity: 0.7;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateX(-50%) translateY(0);
+    }
+    40% {
+      transform: translateX(-50%) translateY(-10px);
+    }
+    60% {
+      transform: translateX(-50%) translateY(-5px);
+    }
+  }
+
+  /* Tablet Styles */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .hero {
+      min-height: var(--hero-height-tablet);
+    }
+
+    .hero-content {
+      min-height: var(--hero-height-tablet);
+    }
+
+    .hero-eyebrow {
+      font-size: {{ section.settings.eyebrow_size_tablet | default: 16 }}px;
+    }
+
+    .hero-heading {
+      font-size: {{ section.settings.heading_size_tablet | default: 42 }}px;
+    }
+
+    .hero-subheading {
+      font-size: {{ section.settings.subheading_size_tablet | default: 20 }}px;
+    }
+
+    .hero-content.content-layout--split-left,
+    .hero-content.content-layout--split-right {
+      grid-template-columns: 1fr 1fr;
+      gap: {{ section.settings.content_gap | default: 32 | plus: 16 }}px;
+    }
+
+    .hero-content.content-layout--split-right .hero-text-content {
+      order: 2;
+    }
+
+    .hero-content.content-layout--split-right .hero-image-content {
+      order: 1;
+    }
+  }
+
+  /* Desktop Styles */
+  @media (min-width: 1025px) {
+    .hero {
+      min-height: var(--hero-height-desktop);
+    }
+
+    .hero-content {
+      min-height: var(--hero-height-desktop);
+    }
+
+    .hero-eyebrow {
+      font-size: {{ section.settings.eyebrow_size_desktop | default: 18 }}px;
+    }
+
+    .hero-heading {
+      font-size: {{ section.settings.heading_size_desktop | default: 56 }}px;
+    }
+
+    .hero-subheading {
+      font-size: {{ section.settings.subheading_size_desktop | default: 22 }}px;
+    }
+
+    .hero-content.content-layout--split-left,
+    .hero-content.content-layout--split-right {
+      grid-template-columns: 1fr 1fr;
+      gap: {{ section.settings.content_gap | default: 32 | plus: 32 }}px;
+    }
+
+    .hero-buttons {
+      justify-content: {{ section.settings.button_alignment | default: 'flex-start' }};
+    }
+
+    .hero-content.content-layout--text-center .hero-buttons {
+      justify-content: center;
+    }
+
+    .hero-content.content-layout--text-right .hero-buttons {
+      justify-content: flex-end;
+    }
+  }
+
+  /* Large Desktop */
+  @media (min-width: 1200px) {
+    .hero-heading {
+      font-size: {{ section.settings.heading_size_large | default: 64 }}px;
+    }
+
+    .hero-subheading {
+      font-size: {{ section.settings.subheading_size_large | default: 24 }}px;
+    }
+  }
+
+  /* Mobile Adjustments */
+  @media (max-width: 768px) {
+    .hero-buttons {
+      flex-direction: {{ section.settings.button_stack_mobile | default: 'row' }};
+    }
+
+    .hero-button {
+      {% if section.settings.button_full_width_mobile %}
+        width: 100%;
+        text-align: center;
+      {% endif %}
+    }
+
+    .hero-content.content-layout--text-center,
+    .hero-content.content-layout--text-left,
+    .hero-content.content-layout--text-right {
+      text-align: center;
+    }
+  }
+
+  /* Touch Device Optimization */
+  @media (hover: none) {
+    .hero-button:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .hero-button:active {
+      background-color: var(--primary-white, #ffffff);
+      color: var(--dark-blue, #0d1b2a);
+    }
+
+    .hero-scroll-indicator {
+      display: none;
+    }
+  }
+
+  /* High Contrast Mode */
+  @media (prefers-contrast: high) {
+    .hero-button {
+      border-width: 3px;
+    }
+
+    .hero-button:focus {
+      outline-width: 3px;
+      outline-offset: 3px;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-button {
+      transition: none;
+    }
+
+    .hero-button:hover,
+    .hero-button:active {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .hero-scroll-indicator {
+      animation: none;
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    .hero {
+      min-height: auto;
+      page-break-inside: avoid;
+    }
+
+    .hero-scroll-indicator {
+      display: none;
+    }
+
+    .hero-button {
+      border: 2px solid #000;
+      color: #000 !important;
+      background: transparent !important;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Hero",
+  "class": "hero-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#1b263b",
+      "info": "Used when no background image is set"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image",
+      "info": "Recommended: 1920x800px or larger"
+    },
+    {
+      "type": "select",
+      "id": "background_image_fit",
+      "label": "Background Image Fit",
+      "options": [
+        { "value": "cover", "label": "Cover (recommended)" },
+        { "value": "contain", "label": "Contain" },
+        { "value": "fill", "label": "Fill" }
+      ],
+      "default": "cover",
+      "info": "How the background image fits the container"
+    },
+    {
+      "type": "select",
+      "id": "background_image_position",
+      "label": "Background Image Position",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "top center", "label": "Top Center" },
+        { "value": "bottom center", "label": "Bottom Center" },
+        { "value": "center left", "label": "Center Left" },
+        { "value": "center right", "label": "Center Right" },
+        { "value": "top left", "label": "Top Left" },
+        { "value": "top right", "label": "Top Right" },
+        { "value": "bottom left", "label": "Bottom Left" },
+        { "value": "bottom right", "label": "Bottom Right" }
+      ],
+      "default": "center center"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overlay",
+      "label": "Show Overlay",
+      "default": true,
+      "info": "Adds a semi-transparent overlay over the background"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay Color",
+      "default": "rgba(13, 27, 42, 0.4)",
+      "info": "Color of the overlay (supports rgba)"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.4,
+      "info": "Transparency of the overlay"
+    },
+    {
+      "type": "header",
+      "content": "Hero Height"
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Height Mobile (px)",
+      "min": 300,
+      "max": 800,
+      "step": 20,
+      "default": 500,
+      "info": "Height on mobile devices"
+    },
+    {
+      "type": "range",
+      "id": "height_tablet",
+      "label": "Height Tablet (px)",
+      "min": 400,
+      "max": 900,
+      "step": 20,
+      "default": 600,
+      "info": "Height on tablet devices"
+    },
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "label": "Height Desktop (px)",
+      "min": 500,
+      "max": 1000,
+      "step": 20,
+      "default": 700,
+      "info": "Height on desktop devices"
+    },
+    {
+      "type": "header",
+      "content": "Content Layout"
+    },
+    {
+      "type": "select",
+      "id": "content_layout",
+      "label": "Content Layout",
+      "options": [
+        { "value": "content-layout--text-center", "label": "Text Center" },
+        { "value": "content-layout--text-left", "label": "Text Left" },
+        { "value": "content-layout--text-right", "label": "Text Right" },
+        { "value": "content-layout--split-left", "label": "Split - Text Left, Image Right" },
+        { "value": "content-layout--split-right", "label": "Split - Image Left, Text Right" }
+      ],
+      "default": "content-layout--text-center",
+      "info": "How content is arranged in the hero"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center",
+      "info": "Text alignment within the content area"
+    },
+    {
+      "type": "range",
+      "id": "content_gap",
+      "label": "Content Gap (px)",
+      "min": 16,
+      "max": 80,
+      "step": 8,
+      "default": 32,
+      "info": "Space between text and image content"
+    },
+    {
+      "type": "range",
+      "id": "text_spacing",
+      "label": "Text Element Spacing (px)",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "default": 16,
+      "info": "Space between text elements"
+    },
+    {
+      "type": "header",
+      "content": "Eyebrow Text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow_text",
+      "label": "Eyebrow Text",
+      "placeholder": "Welcome to our store",
+      "info": "Small text above the main heading"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size_mobile",
+      "label": "Eyebrow Size Mobile (px)",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size_tablet",
+      "label": "Eyebrow Size Tablet (px)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size_desktop",
+      "label": "Eyebrow Size Desktop (px)",
+      "min": 14,
+      "max": 28,
+      "step": 1,
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "eyebrow_weight",
+      "label": "Eyebrow Font Weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "select",
+      "id": "eyebrow_transform",
+      "label": "Eyebrow Text Transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "lowercase", "label": "lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_letter_spacing",
+      "label": "Eyebrow Letter Spacing (px)",
+      "min": 0,
+      "max": 3,
+      "step": 0.5,
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Main Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Find Your Dream Property",
+      "placeholder": "Enter your main heading"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading Size Mobile (px)",
+      "min": 24,
+      "max": 48,
+      "step": 2,
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_size_tablet",
+      "label": "Heading Size Tablet (px)",
+      "min": 32,
+      "max": 64,
+      "step": 2,
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Heading Size Desktop (px)",
+      "min": 40,
+      "max": 80,
+      "step": 2,
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "heading_size_large",
+      "label": "Heading Size Large Desktop (px)",
+      "min": 48,
+      "max": 96,
+      "step": 2,
+      "default": 64
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading Font Weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Heading Line Height",
+      "min": 1,
+      "max": 1.8,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "header",
+      "content": "Subheading"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover the perfect home with our expert real estate services",
+      "placeholder": "Enter your subheading text"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size_mobile",
+      "label": "Subheading Size Mobile (px)",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "subheading_size_tablet",
+      "label": "Subheading Size Tablet (px)",
+      "min": 16,
+      "max": 28,
+      "step": 1,
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "subheading_size_desktop",
+      "label": "Subheading Size Desktop (px)",
+      "min": 18,
+      "max": 32,
+      "step": 1,
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "subheading_size_large",
+      "label": "Subheading Size Large Desktop (px)",
+      "min": 20,
+      "max": 36,
+      "step": 1,
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Subheading Font Weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "subheading_line_height",
+      "label": "Subheading Line Height",
+      "min": 1.2,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.5
+    },
+    {
+      "type": "range",
+      "id": "subheading_opacity",
+      "label": "Subheading Opacity",
+      "min": 0.5,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.9
+    },
+    {
+      "type": "header",
+      "content": "Text Effects"
+    },
+    {
+      "type": "text",
+      "id": "text_shadow",
+      "label": "Text Shadow",
+      "default": "0 2px 4px rgba(0, 0, 0, 0.5)",
+      "info": "CSS text-shadow property for better text readability"
+    },
+    {
+      "type": "header",
+      "content": "Primary Button"
+    },
+    {
+      "type": "text",
+      "id": "button_primary_text",
+      "label": "Primary Button Text",
+      "default": "View Properties",
+      "placeholder": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "button_primary_url",
+      "label": "Primary Button URL",
+      "info": "Where the primary button links to"
+    },
+    {
+      "type": "header",
+      "content": "Secondary Button"
+    },
+    {
+      "type": "text",
+      "id": "button_secondary_text",
+      "label": "Secondary Button Text",
+      "placeholder": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "button_secondary_url",
+      "label": "Secondary Button URL",
+      "info": "Where the secondary button links to"
+    },
+    {
+      "type": "header",
+      "content": "Button Styling"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Button Font Size (px)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "Button Font Weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical",
+      "label": "Button Padding Vertical (px)",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "label": "Button Padding Horizontal (px)",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Button Border Radius (px)",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "button_spacing",
+      "label": "Button Spacing (px)",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "default": 16,
+      "info": "Space between buttons"
+    },
+    {
+      "type": "range",
+      "id": "button_margin_top",
+      "label": "Button Margin Top (px)",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "info": "Space above buttons"
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "label": "Button Text Transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "lowercase", "label": "lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "button_letter_spacing",
+      "label": "Button Letter Spacing (px)",
+      "min": 0,
+      "max": 3,
+      "step": 0.5,
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "button_alignment",
+      "label": "Button Alignment (Desktop)",
+      "options": [
+        { "value": "flex-start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Right" }
+      ],
+      "default": "flex-start",
+      "info": "Button alignment on desktop (overridden by text alignment)"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Button Settings"
+    },
+    {
+      "type": "select",
+      "id": "button_stack_mobile",
+      "label": "Button Layout Mobile",
+      "options": [
+        { "value": "row", "label": "Side by Side" },
+        { "value": "column", "label": "Stacked" }
+      ],
+      "default": "row"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_full_width_mobile",
+      "label": "Full Width Buttons on Mobile",
+      "default": false,
+      "info": "Makes buttons full width on mobile devices"
+    },
+    {
+      "type": "header",
+      "content": "Content Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "content_image",
+      "label": "Content Image",
+      "info": "Image displayed alongside text content"
+    },
+    {
+      "type": "range",
+      "id": "content_image_border_radius",
+      "label": "Content Image Border Radius (px)",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "content_image_shadow",
+      "label": "Content Image Shadow",
+      "default": "0 8px 24px rgba(0, 0, 0, 0.2)",
+      "info": "CSS box-shadow property for the content image"
+    },
+    {
+      "type": "header",
+      "content": "Additional Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_indicator",
+      "label": "Show Scroll Indicator",
+      "default": false,
+      "info": "Shows a bouncing arrow indicating users can scroll down"
+    },
+    {
+      "type": "range",
+      "id": "scroll_indicator_position",
+      "label": "Scroll Indicator Position (px)",
+      "min": 20,
+      "max": 60,
+      "step": 5,
+      "default": 30,
+      "info": "Distance from bottom of hero"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero",
+      "settings": {
+        "heading": "Find Your Dream Property",
+        "subheading": "Discover the perfect home with our expert real estate services",
+        "button_primary_text": "View Properties",
+        "button_primary_url": "/collections/properties",
+        "button_secondary_text": "Learn More",
+        "button_secondary_url": "/pages/about",
+        "eyebrow_text": "Welcome to Real Estate",
+        "content_layout": "content-layout--text-center",
+        "background_color": "#1b263b",
+        "show_overlay": true,
+        "overlay_color": "rgba(13, 27, 42, 0.4)"
+      }
+    }
+  ]
+}
+{% endschema %}
