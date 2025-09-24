@@ -15,48 +15,8 @@
       "type": "footer",
       "settings": {
         "company_name": "Inmobiliaria Real Estate",
-        "company_description": "Especialistas en bienes raíces con años de experiencia en el mercado inmobiliario. Ofrecemos servicios de venta, alquiler y tasación de propiedades.",
-        "contact_title": "Contacto",
-        "address": "Calle Principal 123, Ciudad, País",
-        "phone": "+1 (555) 123-4567",
-        "email": "info@inmobiliaria.com",
-        "hours": "Lun-Vie: 9:00-18:00, Sáb: 9:00-14:00",
-        "social_title": "Síguenos",
-        "facebook_url": "https://facebook.com/inmobiliaria",
-        "instagram_url": "https://instagram.com/inmobiliaria",
-        "whatsapp_url": "https://wa.me/1234567890",
-        "copyright_text": "Inmobiliaria Real Estate",
-        "rights_text": "Todos los derechos reservados."
-      },
-      "blocks": {
-        "menu_block_1": {
-          "type": "menu",
-          "settings": {
-            "menu_title": "Navegación",
-            "menu": ""
-          }
-        },
-        "menu_block_2": {
-          "type": "menu",
-          "settings": {
-            "menu_title": "Servicios",
-            "menu": ""
-          }
-        },
-        "newsletter_block": {
-          "type": "newsletter",
-          "settings": {
-            "title": "Newsletter",
-            "description": "Recibe las últimas propiedades y ofertas especiales",
-            "button_text": "Suscribirse"
-          }
-        }
-      },
-      "block_order": [
-        "menu_block_1",
-        "menu_block_2",
-        "newsletter_block"
-      ]
+        "company_description": "Especialistas en bienes raíces con años de experiencia"
+      }
     }
   },
   "order": [
