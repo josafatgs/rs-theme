@@ -1,0 +1,275 @@
+{% comment %}
+  Footer Newsletter Block Component
+  
+  Displays a newsletter signup form with configurable content
+  Uses Shopify's customer form for newsletter subscriptions
+  
+  Parameters:
+  - block: The block object containing settings
+{% endcomment %}
+
+<div class="footer-newsletter-block">
+  {% if block.settings.title != blank %}
+    <h4 class="footer-newsletter-title" id="block-{{ block.id }}-heading">
+      {{ block.settings.title }}
+    </h4>
+  {% endif %}
+  
+  {% if block.settings.description != blank %}
+    <p class="footer-newsletter-description">
+      {{ block.settings.description }}
+    </p>
+  {% endif %}
+  
+  {% form 'customer', class: 'footer-newsletter-form', novalidate: 'novalidate' %}
+    <input type="hidden" name="contact[tags]" value="newsletter">
+    
+    <div class="footer-newsletter-input-group">
+      <label for="newsletter-email-{{ block.id }}" class="sr-only">
+        Dirección de correo electrónico
+      </label>
+      <input 
+        type="email" 
+        name="contact[email]" 
+        id="newsletter-email-{{ block.id }}"
+        class="footer-newsletter-input"
+        placeholder="Tu email"
+        autocomplete="email"
+        required
+        aria-describedby="newsletter-error-{{ block.id }}"
+      >
+      <button 
+        type="submit" 
+        class="footer-newsletter-button"
+        aria-label="Suscribirse al newsletter">
+        {{ block.settings.button_text | default: 'Suscribirse' }}
+      </button>
+    </div>
+    
+    {% if form.errors %}
+      <div class="footer-newsletter-error" id="newsletter-error-{{ block.id }}" role="alert">
+        {{ form.errors.translated_fields.email | capitalize }}
+        {{ form.errors.messages.email }}
+      </div>
+    {% endif %}
+    
+    {% if form.posted_successfully? %}
+      <div class="footer-newsletter-success" role="status">
+        {% render 'svg', icon: 'check', class: 'svg-icon--small' %}
+        ¡Gracias por suscribirte!
+      </div>
+    {% endif %}
+  {% endform %}
+</div>
+
+{% stylesheet %}
+  .footer-newsletter-block {
+    margin-bottom: 2rem;
+  }
+
+  .footer-newsletter-title {
+    color: var(--primary-gold, #cd9d08);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+  }
+
+  .footer-newsletter-description {
+    color: var(--primary-white, #ffffff);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0 0 1.5rem 0;
+    opacity: 0.9;
+  }
+
+  .footer-newsletter-form {
+    margin: 0;
+  }
+
+  .footer-newsletter-input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .footer-newsletter-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--primary-white, #ffffff);
+    font-size: 0.9rem;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+  }
+
+  .footer-newsletter-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .footer-newsletter-input:focus {
+    outline: none;
+    border-color: var(--primary-gold, #cd9d08);
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .footer-newsletter-input:invalid {
+    border-color: #ff6b6b;
+  }
+
+  .footer-newsletter-button {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-gold, #cd9d08);
+    color: var(--dark-blue, #0d1b2a);
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .footer-newsletter-button:hover {
+    background-color: #b8890a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(205, 157, 8, 0.3);
+  }
+
+  .footer-newsletter-button:focus {
+    outline: 2px solid var(--primary-white, #ffffff);
+    outline-offset: 2px;
+  }
+
+  .footer-newsletter-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(205, 157, 8, 0.3);
+  }
+
+  .footer-newsletter-error {
+    color: #ff6b6b;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 4px;
+  }
+
+  .footer-newsletter-success {
+    color: #4ecdc4;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background-color: rgba(78, 205, 196, 0.1);
+    border: 1px solid rgba(78, 205, 196, 0.3);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Screen reader only text */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .footer-newsletter-block {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    
+    .footer-newsletter-title {
+      font-size: 1.25rem;
+    }
+    
+    .footer-newsletter-input-group {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .footer-newsletter-input,
+    .footer-newsletter-button {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+    }
+    
+    .footer-newsletter-description {
+      font-size: 0.95rem;
+      max-width: 280px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .footer-newsletter-input-group {
+      max-width: 300px;
+    }
+  }
+
+  /* Touch device optimization */
+  @media (hover: none) {
+    .footer-newsletter-button:hover {
+      transform: none;
+      box-shadow: none;
+      background-color: var(--primary-gold, #cd9d08);
+    }
+    
+    .footer-newsletter-button:active {
+      background-color: #b8890a;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .footer-newsletter-input {
+      border-width: 3px;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .footer-newsletter-button {
+      border: 2px solid var(--primary-white, #ffffff);
+    }
+    
+    .footer-newsletter-error {
+      border-width: 2px;
+      background-color: rgba(255, 107, 107, 0.2);
+    }
+    
+    .footer-newsletter-success {
+      border-width: 2px;
+      background-color: rgba(78, 205, 196, 0.2);
+    }
+  }
+
+  /* Reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .footer-newsletter-input,
+    .footer-newsletter-button {
+      transition: none;
+    }
+    
+    .footer-newsletter-button:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .footer-newsletter-button:active {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+{% endstylesheet %}

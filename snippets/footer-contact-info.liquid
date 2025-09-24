@@ -9,7 +9,7 @@
 {% endcomment %}
 
 {% assign has_contact_info = false %}
-{% if section.settings.address != blank or section.settings.phone != blank or section.settings.email != blank or section.settings.hours != blank %}
+{% if section.settings.address != blank or section.settings.phone != blank or section.settings.phone_secondary != blank or section.settings.email != blank or section.settings.email_secondary != blank or section.settings.hours != blank %}
   {% assign has_contact_info = true %}
 {% endif %}
 
@@ -46,6 +46,21 @@
           </a>
         </div>
       {% endif %}
+
+      {% if section.settings.phone_secondary != blank %}
+        <div class="footer-contact-item">
+          <span class="footer-contact-icon" aria-hidden="true">
+            {% render 'svg', icon: 'phone', class: 'svg-icon--medium' %}
+          </span>
+          <a href="tel:{{ section.settings.phone_secondary | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')', '' }}" 
+             class="footer-contact-link"
+             aria-label="Llamar al teléfono {{ section.settings.phone_secondary }}"
+             title="Llamar al {{ section.settings.phone_secondary }}">
+            <span aria-hidden="true">{{ section.settings.phone_secondary }}</span>
+            <span class="sr-only">Teléfono: {{ section.settings.phone_secondary }}</span>
+          </a>
+        </div>
+      {% endif %}
       
       {% if section.settings.email != blank %}
         <div class="footer-contact-item">
@@ -58,6 +73,21 @@
              title="Enviar email a {{ section.settings.email }}">
             <span aria-hidden="true">{{ section.settings.email }}</span>
             <span class="sr-only">Correo electrónico: {{ section.settings.email }}</span>
+          </a>
+        </div>
+      {% endif %}
+
+      {% if section.settings.email_secondary != blank %}
+        <div class="footer-contact-item">
+          <span class="footer-contact-icon" aria-hidden="true">
+            {% render 'svg', icon: 'email', class: 'svg-icon--medium' %}
+          </span>
+          <a href="mailto:{{ section.settings.email_secondary }}" 
+             class="footer-contact-link"
+             aria-label="Enviar correo electrónico a {{ section.settings.email_secondary }}"
+             title="Enviar email a {{ section.settings.email_secondary }}">
+            <span aria-hidden="true">{{ section.settings.email_secondary }}</span>
+            <span class="sr-only">Correo electrónico: {{ section.settings.email_secondary }}</span>
           </a>
         </div>
       {% endif %}
