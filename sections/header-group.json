@@ -13,7 +13,27 @@
   "sections": {
     "header": {
       "type": "header",
-      "settings": {}
+      "settings": {
+        "logo": "shopify://shop_images/DORADO-N.png",
+        "logo_width": 170,
+        "logo_height": 60,
+        "logo_text": "",
+        "logo_text_size": 26,
+        "menu": "home",
+        "menu_font_size": 16,
+        "menu_font_weight": "500",
+        "menu_spacing": 64,
+        "menu_link_padding": 10,
+        "whatsapp_number": "",
+        "whatsapp_text": "WhatsApp",
+        "cta_font_size": 14,
+        "cta_padding_vertical": 12,
+        "cta_padding_horizontal": 20,
+        "cta_border_radius": 6,
+        "header_padding_top": 16,
+        "header_padding_bottom": 16,
+        "header_padding_horizontal": 20
+      }
     }
   },
   "order": [
