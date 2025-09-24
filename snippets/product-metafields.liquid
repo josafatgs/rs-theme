@@ -181,7 +181,9 @@
     {% comment %} Bathrooms - only show if validated {% endcomment %}
     {% if bathrooms != null %}
       <div class="property-detail detail-item" data-metafield="bathrooms" data-validation="passed">
-        <span class="property-detail__icon detail-icon">🚿</span>
+        <span class="property-detail__icon detail-icon">
+          {% render 'svg', icon: 'bath', class: 'svg-icon--medium svg-icon--primary' %}
+        </span>
         <span class="property-detail__label detail-label">Baños:</span>
         <span class="property-detail__value detail-value">{{ bathrooms }}</span>
       </div>
@@ -190,7 +192,9 @@
     {% comment %} Square Meters - only show if validated {% endcomment %}
     {% if square_meters != null %}
       <div class="property-detail detail-item" data-metafield="square-meters" data-validation="passed">
-        <span class="property-detail__icon detail-icon">📐</span>
+        <span class="property-detail__icon detail-icon">
+          {% render 'svg', icon: 'area', class: 'svg-icon--medium svg-icon--primary' %}
+        </span>
         <span class="property-detail__label detail-label">Metros Cuadrados:</span>
         <span class="property-detail__value detail-value">{{ square_meters }} m²</span>
       </div>
@@ -199,7 +203,9 @@
     {% comment %} Location - only show if validated {% endcomment %}
     {% if location != null %}
       <div class="property-detail detail-item" data-metafield="location" data-validation="passed">
-        <span class="property-detail__icon detail-icon">📍</span>
+        <span class="property-detail__icon detail-icon">
+          {% render 'svg', icon: 'location', class: 'svg-icon--medium svg-icon--primary' %}
+        </span>
         <span class="property-detail__label detail-label">Ubicación:</span>
         <span class="property-detail__value detail-value">{{ location }}</span>
       </div>
@@ -208,7 +214,9 @@
     {% comment %} Property Type - only show if validated {% endcomment %}
     {% if property_type != null %}
       <div class="property-detail detail-item" data-metafield="property-type" data-validation="passed">
-        <span class="property-detail__icon detail-icon">🏠</span>
+        <span class="property-detail__icon detail-icon">
+          {% render 'svg', icon: 'home', class: 'svg-icon--medium svg-icon--primary' %}
+        </span>
         <span class="property-detail__label detail-label">Tipo de Propiedad:</span>
         <span class="property-detail__value detail-value">{{ property_type }}</span>
       </div>
@@ -217,7 +225,9 @@
     {% comment %} Parking Spaces - only show if validated {% endcomment %}
     {% if parking_spaces != null %}
       <div class="property-detail detail-item" data-metafield="parking-spaces" data-validation="passed">
-        <span class="property-detail__icon detail-icon">🚗</span>
+        <span class="property-detail__icon detail-icon">
+          {% render 'svg', icon: 'car', class: 'svg-icon--medium svg-icon--primary' %}
+        </span>
         <span class="property-detail__label detail-label">Estacionamiento:</span>
         <span class="property-detail__value detail-value">{{ parking_spaces }} {% if parking_spaces == 1 %}espacio{% else %}espacios{% endif %}</span>
       </div>

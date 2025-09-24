@@ -1549,3 +1549,84 @@ Error handling styles for product slider and variants */
   opacity: 0.6;
   filter: grayscale(100%) brightness(1.1);
 }
+/* S
+VG Icon Base Styles */
+.svg-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Icon size variations */
+.svg-icon--small {
+  width: 0.875em;
+  height: 0.875em;
+}
+
+.svg-icon--medium {
+  width: 1.25em;
+  height: 1.25em;
+}
+
+.svg-icon--large {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.svg-icon--xl {
+  width: 2em;
+  height: 2em;
+}
+
+/* Icon color variations */
+.svg-icon--primary {
+  color: var(--primary-gold);
+}
+
+.svg-icon--secondary {
+  color: var(--detail-blue);
+}
+
+.svg-icon--muted {
+  color: var(--text-light);
+}
+
+.svg-icon--white {
+  color: var(--primary-white);
+}
+
+/* Icon interactive states */
+.svg-icon--interactive {
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.svg-icon--interactive:hover {
+  color: var(--primary-gold);
+  transform: scale(1.1);
+}
+
+/* Accessibility improvements */
+.svg-icon[aria-hidden="true"] {
+  pointer-events: none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .svg-icon {
+    filter: contrast(1.2);
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .svg-icon--interactive {
+    transition: none;
+  }
+  
+  .svg-icon--interactive:hover {
+    transform: none;
+  }
+}

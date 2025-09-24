@@ -1,0 +1,119 @@
+{% comment %}
+  Footer Text Block Component
+  
+  Displays a configurable text block with rich text content
+  Handles empty content gracefully by hiding the entire section
+  
+  Parameters:
+  - block: The block object containing settings
+{% endcomment %}
+
+{% if block.settings.title != blank or block.settings.content != blank %}
+  <div class="footer-text-block">
+    {% if block.settings.title != blank %}
+      <h4 class="footer-text-title" id="block-{{ block.id }}-heading">
+        {{ block.settings.title }}
+      </h4>
+    {% endif %}
+    
+    {% if block.settings.content != blank %}
+      <div class="footer-text-content" {% if block.settings.title != blank %}aria-labelledby="block-{{ block.id }}-heading"{% endif %}>
+        {{ block.settings.content }}
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .footer-text-block {
+    margin-bottom: 2rem;
+  }
+
+  .footer-text-title {
+    color: var(--primary-gold, #cd9d08);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+  }
+
+  .footer-text-content {
+    color: var(--primary-white, #ffffff);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  .footer-text-content p {
+    margin: 0 0 1rem 0;
+  }
+
+  .footer-text-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .footer-text-content a {
+    color: var(--primary-gold, #cd9d08);
+    text-decoration: underline;
+    transition: color 0.3s ease;
+  }
+
+  .footer-text-content a:hover,
+  .footer-text-content a:focus {
+    color: var(--primary-white, #ffffff);
+    text-decoration: none;
+  }
+
+  .footer-text-content a:focus {
+    outline: 2px solid var(--primary-gold, #cd9d08);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  .footer-text-content ul,
+  .footer-text-content ol {
+    margin: 0 0 1rem 1.5rem;
+    padding: 0;
+  }
+
+  .footer-text-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-text-content strong {
+    color: var(--primary-gold, #cd9d08);
+    font-weight: 600;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .footer-text-block {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    
+    .footer-text-title {
+      font-size: 1.25rem;
+    }
+    
+    .footer-text-content {
+      font-size: 0.95rem;
+      text-align: left;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .footer-text-content a {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+    }
+    
+    .footer-text-content a:focus {
+      outline-width: 3px;
+      outline-offset: 3px;
+    }
+  }
+{% endstylesheet %}
