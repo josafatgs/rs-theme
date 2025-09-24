@@ -570,9 +570,12 @@
   }
 {% endstylesheet %}
 
-<script>
+{% javascript %}
   document.addEventListener('DOMContentLoaded', function() {
+    console.log('Slideshow script loaded'); // Debug log
+    
     const slideshows = document.querySelectorAll('.slideshow');
+    console.log('Found slideshows:', slideshows.length); // Debug log
     
     slideshows.forEach(function(slideshow) {
       initSlideshow(slideshow);
@@ -585,13 +588,20 @@
       const nextBtn = slideshow.querySelector('.slideshow-next');
       const counter = slideshow.querySelector('.slideshow-counter .counter-current');
       
-      if (slides.length <= 1) return;
+      console.log('Initializing slideshow with', slides.length, 'slides'); // Debug log
+      
+      if (slides.length <= 1) {
+        console.log('Not enough slides, skipping initialization');
+        return;
+      }
       
       let currentSlide = 0;
       let autoplayInterval;
       
       const autoplay = slideshow.dataset.autoplay === 'true';
       const autoplaySpeed = parseInt(slideshow.dataset.autoplaySpeed) || 5000;
+      
+      console.log('Autoplay:', autoplay, 'Speed:', autoplaySpeed); // Debug log
       
       // Initialize slideshow
       updateSlideshow();
@@ -602,6 +612,7 @@
       
       // Navigation functions
       function goToSlide(index) {
+        console.log('Going to slide:', index); // Debug log
         currentSlide = index;
         updateSlideshow();
         
@@ -612,25 +623,29 @@
       
       function nextSlide() {
         currentSlide = (currentSlide + 1) % slides.length;
+        console.log('Next slide:', currentSlide); // Debug log
         updateSlideshow();
       }
       
       function prevSlide() {
         currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        console.log('Previous slide:', currentSlide); // Debug log
         updateSlideshow();
       }
       
       function updateSlideshow() {
         // Update slides
         slides.forEach(function(slide, index) {
-          slide.classList.toggle('active', index === currentSlide);
-          slide.setAttribute('aria-hidden', index !== currentSlide);
+          const isActive = index === currentSlide;
+          slide.classList.toggle('active', isActive);
+          slide.setAttribute('aria-hidden', !isActive);
         });
         
         // Update dots
         dots.forEach(function(dot, index) {
-          dot.classList.toggle('active', index === currentSlide);
-          dot.setAttribute('aria-selected', index === currentSlide);
+          const isActive = index === currentSlide;
+          dot.classList.toggle('active', isActive);
+          dot.setAttribute('aria-selected', isActive);
         });
         
         // Update counter
@@ -641,13 +656,16 @@
       
       function startAutoplay() {
         if (autoplay && slides.length > 1) {
+          console.log('Starting autoplay'); // Debug log
           autoplayInterval = setInterval(nextSlide, autoplaySpeed);
         }
       }
       
       function stopAutoplay() {
         if (autoplayInterval) {
+          console.log('Stopping autoplay'); // Debug log
           clearInterval(autoplayInterval);
+          autoplayInterval = null;
         }
       }
       
@@ -658,21 +676,27 @@
       
       // Event listeners
       if (prevBtn) {
-        prevBtn.addEventListener('click', function() {
+        prevBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Previous button clicked'); // Debug log
           prevSlide();
           if (autoplay) resetAutoplay();
         });
       }
       
       if (nextBtn) {
-        nextBtn.addEventListener('click', function() {
+        nextBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Next button clicked'); // Debug log
           nextSlide();
           if (autoplay) resetAutoplay();
         });
       }
       
       dots.forEach(function(dot, index) {
-        dot.addEventListener('click', function() {
+        dot.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Dot clicked:', index); // Debug log
           goToSlide(index);
         });
       });
@@ -731,7 +755,7 @@
       }
     }
   });
-</script>
+{% endjavascript %}
 
 {% schema %}
 {
@@ -1047,6 +1071,160 @@
       "info": "Distancia desde el borde"
     },
     {
+      "type": "range",
+      "id": "arrow_opacity",
+      "label": "Opacidad de Flechas",
+      "min": 0.3,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Mostrar Puntos de Navegación",
+      "default": true,
+      "info": "Puntos indicadores en la parte inferior"
+    },
+    {
+      "type": "range",
+      "id": "dot_size",
+      "label": "Tamaño de Puntos (px)",
+      "min": 8,
+      "max": 20,
+      "step": 2,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "dots_spacing",
+      "label": "Espaciado entre Puntos (px)",
+      "min": 4,
+      "max": 16,
+      "step": 2,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "dots_position",
+      "label": "Posición de Puntos (px)",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "default": 20,
+      "info": "Distancia desde abajo"
+    },
+    {
+      "type": "range",
+      "id": "dots_opacity",
+      "label": "Opacidad de Puntos",
+      "min": 0.3,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.7
+    },
+    {
+      "type": "checkbox",
+      "id": "show_counter",
+      "label": "Mostrar Contador",
+      "default": false,
+      "info": "Contador de imagen actual (ej: 1/5)"
+    },
+    {
+      "type": "range",
+      "id": "counter_position_vertical",
+      "label": "Posición Vertical del Contador (px)",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "default": 20,
+      "info": "Distancia desde arriba"
+    },
+    {
+      "type": "range",
+      "id": "counter_position_horizontal",
+      "label": "Posición Horizontal del Contador (px)",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "default": 20,
+      "info": "Distancia desde la derecha"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Imagen",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen",
+          "info": "Recomendado: 1920x600px o similar"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Título",
+          "placeholder": "Título de la imagen"
+        },
+        {
+          "type": "textarea",
+          "id": "subheading",
+          "label": "Subtítulo",
+          "placeholder": "Descripción o subtítulo"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Texto del Botón",
+          "placeholder": "Ver más"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Enlace del Botón",
+          "info": "URL a la que dirigirá el botón"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Slideshow",
+      "blocks": [
+        {
+          "type": "image",
+          "settings": {
+            "heading": "Bienvenido a Nuestra Inmobiliaria",
+            "subheading": "Encuentra la propiedad de tus sueños",
+            "button_text": "Ver Propiedades",
+            "button_url": "/collections/propiedades"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "heading": "Servicios Profesionales",
+            "subheading": "Asesoría experta en bienes raíces",
+            "button_text": "Conocer Servicios",
+            "button_url": "/pages/servicios"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "heading": "Contáctanos Hoy",
+            "subheading": "Estamos aquí para ayudarte",
+            "button_text": "Contactar",
+            "button_url": "/pages/contacto"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
       "type": "range",
       "id": "arrow_opacity",
       "label": "Opacidad de Flechas",
