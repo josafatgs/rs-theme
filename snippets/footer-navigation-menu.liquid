@@ -1,0 +1,97 @@
+{% comment %}
+  Footer Navigation Menu Component
+  
+  Displays configurable navigation menus with semantic HTML structure
+  Handles empty menus gracefully by hiding the entire section
+  
+  Parameters:
+  - menu: The menu object to display
+  - title: The title to display for this menu section
+{% endcomment %}
+
+{% if menu != blank %}
+  {% assign heading_id = title | handleize | append: '-heading' %}
+  <nav class="footer-menu" role="navigation" aria-labelledby="{{ heading_id }}">
+    <h4 class="footer-menu-title" id="{{ heading_id }}">{{ title }}</h4>
+    {% if menu.links.size > 0 %}
+      <ul class="footer-menu-list" role="list">
+        {% for link in menu.links %}
+          <li class="footer-menu-item" role="listitem">
+            <a href="{{ link.url }}" class="footer-menu-link"
+               {% if link.url contains 'http' %}target="_blank" rel="noopener noreferrer" aria-label="{{ link.title }} (se abre en nueva ventana)"{% endif %}
+               {% unless link.url contains 'http' %}aria-label="{{ link.title }}"{% endunless %}>
+              {{ link.title }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </nav>
+{% endif %}
+
+{% stylesheet %}
+  .footer-menu {
+    margin-bottom: 2rem;
+  }
+
+  .footer-menu-title {
+    color: var(--primary-gold, #cd9d08);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+  }
+
+  .footer-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-menu-item {
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-menu-link {
+    color: var(--primary-white, #ffffff);
+    text-decoration: none;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    transition: color 0.3s ease;
+    display: inline-block;
+    padding: 0.125rem 0;
+  }
+
+  .footer-menu-link:hover,
+  .footer-menu-link:focus {
+    color: var(--primary-gold, #cd9d08);
+    outline: 2px solid var(--primary-gold, #cd9d08);
+    outline-offset: 2px;
+  }
+
+  /* Touch device optimization */
+  @media (hover: none) {
+    .footer-menu-link {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 0;
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .footer-menu {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    
+    .footer-menu-title {
+      font-size: 1.25rem;
+    }
+    
+    .footer-menu-link {
+      font-size: 0.9rem;
+    }
+  }
+{% endstylesheet %}

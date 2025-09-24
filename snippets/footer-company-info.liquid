@@ -1,0 +1,59 @@
+{% comment %}
+  Footer Company Information Component
+  
+  Displays company name and description with proper styling
+  Handles empty description gracefully
+  
+  Parameters:
+  - section: The footer section object containing settings
+{% endcomment %}
+
+<div class="footer-company">
+  <h3 class="footer-company-name" id="company-info-heading">
+    {{ section.settings.company_name | default: shop.name }}
+  </h3>
+  
+  {% if section.settings.company_description != blank %}
+    <p class="footer-company-description">
+      {{ section.settings.company_description }}
+    </p>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .footer-company {
+    margin-bottom: 2rem;
+  }
+
+  .footer-company-name {
+    color: var(--primary-gold, #cd9d08);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+  }
+
+  .footer-company-description {
+    color: var(--primary-white, #ffffff);
+    opacity: 0.9;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .footer-company {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    
+    .footer-company-name {
+      font-size: 1.25rem;
+    }
+    
+    .footer-company-description {
+      font-size: 0.9rem;
+    }
+  }
+{% endstylesheet %}
