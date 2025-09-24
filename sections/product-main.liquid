@@ -1,380 +1,492 @@
-{% comment %}
-  Real Estate Product Main Section
-  Integrates all product components: image slider, product info, metafields, and variant selector
-{% endcomment %}
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-<div class="product-main" data-product-id="{{ product.id }}" data-auto-play="{{ section.settings.enable_auto_play }}" data-auto-play-speed="{{ section.settings.auto_play_speed }}">
-  <div class="product-container">
-    <div class="product-media">
-      {% comment %} Product image slider component {% endcomment %}
-      {% render 'product-image-slider', product: product, section: section %}
-    </div>
-    
-    <div class="product-info">
-      {% comment %} Product information component {% endcomment %}
-      {% render 'product-info', product: product %}
+<article class="property-detail">
+  <div class="container">
+    <!-- Property Header -->
+    <div class="property-header">
+      <nav class="breadcrumb">
+        <a href="{{ routes.root_url }}">Inicio</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="/collections/propiedades">Propiedades</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">{{ product.title }}</span>
+      </nav>
       
-      {% comment %} Variant selector component {% endcomment %}
-      {% if product.variants.size > 1 %}
-        {% render 'product-variant-selector', product: product %}
+      <h1 class="property-title">{{ product.title }}</h1>
+      
+      {% if product.metafields.custom.location %}
+        <div class="property-location">
+          <svg class="location-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span>{{ product.metafields.custom.location }}</span>
+        </div>
       {% endif %}
       
-      {% comment %} Property metafields component {% endcomment %}
-      {% render 'product-metafields', product: product %}
-      
-      {% comment %} Add to cart form {% endcomment %}
-      <form action="/cart/add" method="post" enctype="multipart/form-data" class="product-form">
-        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" class="product-variant-id">
-        
-        <div class="product-form-buttons">
-          <button type="submit" name="add" class="btn btn-primary product-form-cart-submit" 
-                  {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}>
-            <span class="btn-text">
-              {% if product.selected_or_first_available_variant.available %}
-                Agregar al Carrito
-              {% else %}
-                Agotado
-              {% endif %}
-            </span>
-          </button>
-        </div>
-      </form>
+      <div class="property-price">
+        <span class="price-label">Precio:</span>
+        <span class="price-amount">{{ product.price | money }}</span>
+      </div>
     </div>
+
+    <!-- Image Gallery with Swiper -->
+    <div class="property-gallery">
+      {% if product.images.size > 0 %}
+        <!-- Main Swiper Gallery -->
+        <div class="gallery-main">
+          <div class="swiper gallery-main-swiper">
+            <div class="swiper-wrapper">
+              {% for image in product.images %}
+                <div class="swiper-slide">
+                  <img 
+                    src="{{ image | img_url: '1000x750' }}" 
+                    alt="{{ product.title }} - Imagen {{ forloop.index }}"
+                    class="gallery-main-image"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  >
+                  <button class="gallery-fullscreen-btn" onclick="openLightbox({{ forloop.index0 }})">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+              {% endfor %}
+            </div>
+            
+            <!-- Navigation buttons -->
+            {% if product.images.size > 1 %}
+              <div class="swiper-button-next"></div>
+              <div class="swiper-button-prev"></div>
+              <div class="swiper-pagination"></div>
+            {% endif %}
+          </div>
+        </div>
+        
+        <!-- Thumbnail Gallery -->
+        {% if product.images.size > 1 %}
+          <div class="gallery-thumbs">
+            <div class="swiper gallery-thumbs-swiper">
+              <div class="swiper-wrapper">
+                {% for image in product.images %}
+                  <div class="swiper-slide">
+                    <img 
+                      src="{{ image | img_url: '150x100' }}" 
+                      alt="{{ product.title }} - Miniatura {{ forloop.index }}"
+                      class="gallery-thumb-image"
+                      loading="lazy"
+                    >
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+        
+        <!-- Image Counter -->
+        <div class="gallery-counter">
+          <span class="counter-current">1</span>
+          <span class="counter-separator">/</span>
+          <span class="counter-total">{{ product.images.size }}</span>
+        </div>
+        
+      {% else %}
+        <div class="no-image">
+          <div class="no-image-content">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="2"/>
+              <polyline points="21,15 16,10 5,21" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <p>Sin imágenes disponibles</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox-modal" id="lightboxModal">
+      <div class="lightbox-overlay" onclick="closeLightbox()"></div>
+      <div class="lightbox-content">
+        <button class="lightbox-close" onclick="closeLightbox()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+            <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </button>
+        
+        <div class="swiper lightbox-swiper">
+          <div class="swiper-wrapper">
+            {% for image in product.images %}
+              <div class="swiper-slide">
+                <img 
+                  src="{{ image | img_url: '1400x1050' }}" 
+                  alt="{{ product.title }} - Imagen {{ forloop.index }}"
+                  class="lightbox-image"
+                >
+              </div>
+            {% endfor %}
+          </div>
+          
+          {% if product.images.size > 1 %}
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+          {% endif %}
+        </div>
+        
+        <div class="lightbox-counter">
+          <span class="lightbox-current">1</span>
+          <span>/</span>
+          <span class="lightbox-total">{{ product.images.size }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Property Specifications -->
+    <div class="property-specs">
+      <h2>Especificaciones</h2>
+      
+      <div class="specs-grid">
+        {% if product.metafields.custom.bedrooms %}
+          <div class="spec-item">
+            <span class="spec-icon">🛏️</span>
+            <span class="spec-label">Recámaras</span>
+            <span class="spec-value">{{ product.metafields.custom.bedrooms }}</span>
+          </div>
+        {% endif %}
+        
+        {% if product.metafields.custom.bathrooms %}
+          <div class="spec-item">
+            <span class="spec-icon">🚿</span>
+            <span class="spec-label">Baños</span>
+            <span class="spec-value">{{ product.metafields.custom.bathrooms }}</span>
+          </div>
+        {% endif %}
+        
+        {% if product.metafields.custom.square_meters %}
+          <div class="spec-item">
+            <span class="spec-icon">📐</span>
+            <span class="spec-label">Área</span>
+            <span class="spec-value">{{ product.metafields.custom.square_meters }} m²</span>
+          </div>
+        {% endif %}
+        
+        {% if product.metafields.custom.parking_spaces %}
+          <div class="spec-item">
+            <span class="spec-icon">🚗</span>
+            <span class="spec-label">Estacionamiento</span>
+            <span class="spec-value">{{ product.metafields.custom.parking_spaces }} espacio{% if product.metafields.custom.parking_spaces != 1 %}s{% endif %}</span>
+          </div>
+        {% endif %}
+        
+        {% if product.metafields.custom.property_type %}
+          <div class="spec-item">
+            <span class="spec-icon">🏠</span>
+            <span class="spec-label">Tipo</span>
+            <span class="spec-value">{{ product.metafields.custom.property_type | capitalize }}</span>
+          </div>
+        {% endif %}
+        
+        {% if product.metafields.custom.year_built %}
+          <div class="spec-item">
+            <span class="spec-icon">📅</span>
+            <span class="spec-label">Año de construcción</span>
+            <span class="spec-value">{{ product.metafields.custom.year_built }}</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Property Description -->
+    {% if product.description != blank %}
+      <div class="property-description">
+        <h2>Descripción</h2>
+        <div class="description-content">
+          {{ product.description }}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Call to Action Buttons -->
+    <div class="property-actions">
+      <h2>¿Te interesa esta propiedad?</h2>
+      <div class="action-buttons">
+        <a 
+          href="https://wa.me/{{ settings.whatsapp_number | default: '521234567890' }}?text=Hola, me interesa la propiedad: {{ product.title | url_encode }} - {{ shop.url }}{{ product.url }}"
+          target="_blank"
+          class="btn btn--primary btn--whatsapp"
+        >
+          📱 Agendar Cita por WhatsApp
+        </a>
+        
+        <a href="tel:{{ settings.phone_number | default: '+52 123 456 7890' }}" class="btn btn--secondary">
+          📞 Llamar Ahora
+        </a>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<style>
-  .product-main {
-    padding: 2rem 0;
-    background-color: var(--primary-white);
-  }
-  
-  .product-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-    display: grid;
-    gap: 2rem;
-    grid-template-columns: 1fr;
-  }
-  
-  .product-media {
-    width: 100%;
-  }
-  
-  .product-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
-  /* Product form styles */
-  .product-form {
-    margin-top: 2rem;
-  }
-  
-  .product-form-buttons {
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .btn {
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 48px;
-  }
-  
-  .btn-primary {
-    background-color: var(--primary-gold);
-    color: var(--primary-white);
-    flex: 1;
-  }
-  
-  .btn-primary:hover:not(:disabled) {
-    background-color: #b8890a;
-    transform: translateY(-2px);
-  }
-  
-  .btn-primary:disabled {
-    background-color: var(--text-light);
-    cursor: not-allowed;
-    transform: none;
-  }
-  
-  .btn-text {
-    font-weight: 600;
-  }
-  
-  /* Integration states and animations */
-  .price-updating {
-    animation: priceUpdate 0.3s ease-in-out;
-  }
-  
-  .value-updating {
-    animation: valueUpdate 0.3s ease-in-out;
-  }
-  
-  .btn-disabled {
-    opacity: 0.6;
-  }
-  
-  @keyframes priceUpdate {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); color: var(--primary-gold); }
-    100% { transform: scale(1); }
-  }
-  
-  @keyframes valueUpdate {
-    0% { opacity: 1; }
-    50% { opacity: 0.7; background-color: var(--primary-gold); color: var(--primary-white); }
-    100% { opacity: 1; }
-  }
-  
-  /* Loading states */
-  .product-form-cart-submit:disabled .btn-text::after {
-    content: '';
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    margin-left: 8px;
-    border: 2px solid transparent;
-    border-top: 2px solid currentColor;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  /* Tablet layout - balanced columns */
-  @media (min-width: 481px) and (max-width: 768px) {
-    .product-container {
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-    }
-    
-    .product-main {
-      padding: 1.5rem 0;
-    }
-  }
-  
-  /* Desktop layout - two columns */
-  @media (min-width: 769px) {
-    .product-container {
-      {% case section.settings.desktop_layout %}
-        {% when '50-50' %}
-          grid-template-columns: 1fr 1fr;
-        {% when '70-30' %}
-          grid-template-columns: 70% 30%;
-        {% else %}
-          grid-template-columns: 60% 40%;
-      {% endcase %}
-      gap: 3rem;
-    }
-    
-    .product-main {
-      padding: 3rem 0;
-    }
-    
-    .product-info {
-      gap: 2rem;
-    }
-  }
-  
-  /* Large desktop */
-  @media (min-width: 1200px) {
-    .product-container {
-      padding: 0 2rem;
-    }
-  }
-</style>
+  </div>
+</article>
 
-{{ 'product-slider.js' | asset_url | script_tag }}
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
+<!-- Product Gallery JavaScript -->
 <script>
-  // Integration script for product main section
-  document.addEventListener('DOMContentLoaded', function() {
-    const productMain = document.querySelector('.product-main');
-    if (!productMain) return;
-    
-    const productId = productMain.dataset.productId;
-    const autoPlay = productMain.dataset.autoPlay === 'true';
-    const autoPlaySpeed = parseInt(productMain.dataset.autoPlaySpeed) * 1000 || 5000;
-    
-    // Initialize product slider with section settings
-    const slider = productMain.querySelector('.product-slider');
-    if (slider) {
-      // Update auto-play settings from section configuration
-      slider.dataset.autoPlay = autoPlay;
-      slider.dataset.autoPlaySpeed = autoPlaySpeed;
-      
-      // Re-initialize slider with new settings if needed
-      const existingSlider = slider.productSliderInstance;
-      if (existingSlider) {
-        existingSlider.autoPlayDelay = autoPlaySpeed;
-        existingSlider.isAutoPlaying = autoPlay;
-        
-        if (autoPlay) {
-          existingSlider.startAutoPlay();
-        } else {
-          existingSlider.stopAutoPlay();
-        }
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize thumbnail swiper first
+  const galleryThumbs = new Swiper('.gallery-thumbs-swiper', {
+    spaceBetween: 10,
+    slidesPerView: 'auto',
+    freeMode: true,
+    watchSlidesProgress: true,
+    breakpoints: {
+      320: {
+        slidesPerView: 3,
+        spaceBetween: 8
+      },
+      480: {
+        slidesPerView: 4,
+        spaceBetween: 10
+      },
+      768: {
+        slidesPerView: 5,
+        spaceBetween: 12
+      },
+      1024: {
+        slidesPerView: 6,
+        spaceBetween: 15
       }
     }
+  });
+
+  // Initialize main gallery swiper
+  const galleryMain = new Swiper('.gallery-main-swiper', {
+    spaceBetween: 10,
+    navigation: {
+      nextEl: '.gallery-main .swiper-button-next',
+      prevEl: '.gallery-main .swiper-button-prev',
+    },
+    pagination: {
+      el: '.gallery-main .swiper-pagination',
+      clickable: true,
+    },
+    thumbs: {
+      swiper: galleryThumbs,
+    },
+    keyboard: {
+      enabled: true,
+    },
+    mousewheel: {
+      forceToAxis: true,
+    },
+    on: {
+      slideChange: function() {
+        updateCounter(this.activeIndex + 1, this.slides.length);
+      }
+    }
+  });
+
+  // Initialize lightbox swiper
+  let lightboxSwiper;
+  
+  function initLightboxSwiper() {
+    if (lightboxSwiper) {
+      lightboxSwiper.destroy(true, true);
+    }
     
-    // Listen for variant changes to update add to cart button
-    document.addEventListener('variantChanged', function(event) {
-      const { variantId, variantData } = event.detail;
-      
-      // Update add to cart button
-      const cartButton = productMain.querySelector('.product-form-cart-submit');
-      const variantInput = productMain.querySelector('.product-variant-id');
-      
-      if (cartButton && variantInput) {
-        variantInput.value = variantId;
-        
-        // Check if variant is available (this would typically come from variant data)
-        const isAvailable = true; // Simplified - in real implementation, check variant availability
-        
-        if (isAvailable) {
-          cartButton.disabled = false;
-          cartButton.querySelector('.btn-text').textContent = 'Agregar al Carrito';
-          cartButton.classList.remove('btn-disabled');
-        } else {
-          cartButton.disabled = true;
-          cartButton.querySelector('.btn-text').textContent = 'Agotado';
-          cartButton.classList.add('btn-disabled');
+    lightboxSwiper = new Swiper('.lightbox-swiper', {
+      spaceBetween: 10,
+      navigation: {
+        nextEl: '.lightbox-content .swiper-button-next',
+        prevEl: '.lightbox-content .swiper-button-prev',
+      },
+      keyboard: {
+        enabled: true,
+      },
+      zoom: {
+        maxRatio: 3,
+        minRatio: 1
+      },
+      on: {
+        slideChange: function() {
+          updateLightboxCounter(this.activeIndex + 1, this.slides.length);
         }
       }
     });
+  }
+
+  // Update counter function
+  function updateCounter(current, total) {
+    const counterCurrent = document.querySelector('.counter-current');
+    if (counterCurrent) {
+      counterCurrent.textContent = current;
+    }
+  }
+
+  // Update lightbox counter function
+  function updateLightboxCounter(current, total) {
+    const lightboxCurrent = document.querySelector('.lightbox-current');
+    if (lightboxCurrent) {
+      lightboxCurrent.textContent = current;
+    }
+  }
+
+  // Lightbox functions
+  window.openLightbox = function(index = 0) {
+    const modal = document.getElementById('lightboxModal');
+    modal.classList.add('active');
+    document.body.classList.add('lightbox-open');
     
-    // Handle form submission
-    const productForm = productMain.querySelector('.product-form');
-    if (productForm) {
-      productForm.addEventListener('submit', function(event) {
-        const submitButton = this.querySelector('.product-form-cart-submit');
-        const buttonText = submitButton.querySelector('.btn-text');
-        const originalText = buttonText.textContent;
-        
-        // Show loading state
-        submitButton.disabled = true;
-        buttonText.textContent = 'Agregando...';
-        
-        // Re-enable button after 2 seconds (in case of errors)
-        setTimeout(() => {
-          submitButton.disabled = false;
-          buttonText.textContent = originalText;
-        }, 2000);
-      });
+    // Initialize lightbox swiper if not already done
+    if (!lightboxSwiper) {
+      initLightboxSwiper();
     }
     
-    // Smooth scroll to product section if coming from direct link
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('variant') && window.location.hash === '#product') {
-      productMain.scrollIntoView({ behavior: 'smooth' });
+    // Go to specific slide
+    if (lightboxSwiper) {
+      lightboxSwiper.slideTo(index, 0);
+      updateLightboxCounter(index + 1, lightboxSwiper.slides.length);
+    }
+  };
+
+  window.closeLightbox = function() {
+    const modal = document.getElementById('lightboxModal');
+    modal.classList.remove('active');
+    document.body.classList.remove('lightbox-open');
+  };
+
+  // Close lightbox with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeLightbox();
     }
   });
+
+  // Auto-play functionality (optional)
+  let autoplayInterval;
+  
+  function startAutoplay() {
+    if (galleryMain && galleryMain.slides.length > 1) {
+      autoplayInterval = setInterval(() => {
+        if (galleryMain.isEnd) {
+          galleryMain.slideTo(0);
+        } else {
+          galleryMain.slideNext();
+        }
+      }, 5000); // Change slide every 5 seconds
+    }
+  }
+
+  function stopAutoplay() {
+    if (autoplayInterval) {
+      clearInterval(autoplayInterval);
+      autoplayInterval = null;
+    }
+  }
+
+  // Start autoplay on load (optional - remove if not wanted)
+  // startAutoplay();
+
+  // Pause autoplay on hover
+  const galleryContainer = document.querySelector('.gallery-main');
+  if (galleryContainer) {
+    galleryContainer.addEventListener('mouseenter', stopAutoplay);
+    galleryContainer.addEventListener('mouseleave', startAutoplay);
+  }
+
+  // Touch/swipe support for mobile
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  galleryContainer?.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+
+  galleryContainer?.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  });
+
+  function handleSwipe() {
+    const swipeThreshold = 50;
+    const diff = touchStartX - touchEndX;
+    
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        // Swipe left - next slide
+        galleryMain?.slideNext();
+      } else {
+        // Swipe right - previous slide
+        galleryMain?.slidePrev();
+      }
+    }
+  }
+});
 </script>
 
-{% schema %}
-{
-  "name": "Product Main",
-  "tag": "section",
-  "class": "section",
-  "settings": [
-    {
-      "type": "header",
-      "content": "Image Slider Settings"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_auto_play",
-      "label": "Enable image slider auto-play",
-      "default": true
-    },
-    {
-      "type": "range",
-      "id": "auto_play_speed",
-      "min": 3,
-      "max": 10,
-      "step": 1,
-      "unit": "s",
-      "label": "Auto-play speed",
-      "default": 5
-    },
-    {
-      "type": "checkbox",
-      "id": "show_thumbnails",
-      "label": "Show image thumbnails",
-      "default": true
-    },
-    {
-      "type": "header",
-      "content": "Product Information"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_vendor",
-      "label": "Show product vendor",
-      "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "show_sku",
-      "label": "Show product SKU",
-      "default": false
-    },
-    {
-      "type": "header",
-      "content": "Property Details"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_metafields",
-      "label": "Show property metafields",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "metafields_title",
-      "label": "Property details section title",
-      "default": "Detalles de la Propiedad"
-    },
-    {
-      "type": "header",
-      "content": "Layout Settings"
-    },
-    {
-      "type": "select",
-      "id": "desktop_layout",
-      "label": "Desktop layout",
-      "options": [
+<!-- Product Data for JavaScript -->
+<script>
+  window.productData = {
+    title: {{ product.title | json }},
+    images: [
+      {% for image in product.images %}
         {
-          "value": "60-40",
-          "label": "60% Images / 40% Info"
-        },
-        {
-          "value": "50-50",
-          "label": "50% Images / 50% Info"
-        },
-        {
-          "value": "70-30",
-          "label": "70% Images / 30% Info"
-        }
-      ],
-      "default": "60-40"
-    }
-  ]
-}
-{% endschema %}
+          url: {{ image | img_url: '1400x1050' | json }},
+          alt: {{ product.title | append: ' - Imagen ' | append: forloop.index | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ],
+    price: {{ product.price | money | json }},
+    url: {{ shop.url | append: product.url | json }}
+  };
+</script>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "description": {{ product.description | strip_html | json }},
+    "image": [
+      {% for image in product.images limit: 5 %}
+        {{ image | img_url: '800x600' | json }}{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ],
+    "offers": {
+      "@type": "Offer",
+      "price": {{ product.price | divided_by: 100.0 | json }},
+      "priceCurrency": {{ cart.currency.iso_code | json }},
+      "availability": "https://schema.org/InStock",
+      "url": {{ shop.url | append: product.url | json }}
+    }{% if product.metafields.custom.city or product.metafields.custom.state or product.metafields.custom.postal_code %},
+    "address": {
+      "@type": "PostalAddress"{% if product.metafields.custom.city %},
+      "addressLocality": {{ product.metafields.custom.city | json }}{% endif %}{% if product.metafields.custom.state %},
+      "addressRegion": {{ product.metafields.custom.state | json }}{% endif %}{% if product.metafields.custom.postal_code %},
+      "postalCode": {{ product.metafields.custom.postal_code | json }}{% endif %}{% if product.metafields.custom.neighborhood %},
+      "streetAddress": {{ product.metafields.custom.neighborhood | json }}{% endif %}
+    }{% endif %}{% if product.metafields.custom.square_meters %},
+    "floorSize": {
+      "@type": "QuantitativeValue",
+      "value": {{ product.metafields.custom.square_meters | json }},
+      "unitCode": "MTK"
+    }{% endif %}{% if product.metafields.custom.bedrooms %},
+    "numberOfRooms": {{ product.metafields.custom.bedrooms | json }}{% endif %}{% if product.metafields.custom.year_built %},
+    "yearBuilt": {{ product.metafields.custom.year_built | json }}{% endif %}{% if product.metafields.custom.latitude and product.metafields.custom.longitude %},
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": {{ product.metafields.custom.latitude | json }},
+      "longitude": {{ product.metafields.custom.longitude | json }}
+    }{% endif %}
+  }
+  </script>
+</article>
+
+<!-- Include WhatsApp Float -->
+{% render 'whatsapp-float' %}
